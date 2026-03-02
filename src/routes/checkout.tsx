@@ -367,7 +367,7 @@ function Checkout() {
                 ) : (
                   <>
                     {t('checkout.placeOrder')}
-                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-5 w-5 z0 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </Button>
@@ -375,9 +375,9 @@ function Checkout() {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="space-y-6 z-50">
+          <div className="space-y-6 ">
             {/* Order Summary Card */}
-            <Card className="sticky top-24 overflow-hidden border-2 border-primary/10">
+            <Card className="sticky z-50 top-24 overflow-hidden border-2 border-primary/10">
               <CardHeader className="bg-linear-to-r from-primary/10 to-accent/5">
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <div className="p-2 bg-primary/10 rounded-lg">
@@ -486,7 +486,7 @@ function Checkout() {
               className="w-full gap-2 border-2 transition-colors"
               onClick={() => navigate({ to: '/products' })}
             >
-              <ArrowRight className="h-4 w-4 rotate-180" />
+              <ArrowRight className="  h-4 w-4 rotate-180" />
               {t('checkout.continueShopping')}
             </Button>
 

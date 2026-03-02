@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, createLazyFileRoute } from '@tanstack/react-router'
-import { useSearchParams } from '@/lib/useSearchParams'
+import { useState, useEffect, useMemo } from 'react'
+import {
+  useNavigate,
+  createLazyFileRoute,
+  useSearch,
+} from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
@@ -31,82 +34,97 @@ import { useProducts } from '#/lib/api-hooks/products'
 import { useAuthStore } from '@/stores/auth-store'
 
 const MAX_PRICE = 5000
-export const Route = createLazyFileRoute('/products/')({ component: ProductsPage })
-function FiltersSidebar({ className }: { className?: string }) {
+
+type ProductsSearch = {
+  search?: string
+  sort?: string
+  page?: number
+  cat?: string[]
+  minPrice?: number
+  maxPrice?: number
+  inStock?: boolean
+}
+
+export const Route = createLazyFileRoute('/products/')({
+  component: ProductsPage,
+})
+
+function FiltersSidebar({
+  className,
+  onFilterChange,
+}: {
+  className?: string
+  onFilterChange?: () => void
+}) {
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const search = useSearch({ from: '/products/' }) as ProductsSearch
 
-  // 1. Get initial values from URL
-  const minPriceUrl = parseInt(searchParams.get('minPrice') || '0')
-  const maxPriceUrl = parseInt(
-    searchParams.get('maxPrice') || String(MAX_PRICE),
-  )
-
-  // 2. Local state for the slider (tracked as user drags)
   const [localRange, setLocalRange] = useState<number[]>([
-    minPriceUrl,
-    maxPriceUrl,
+    search.minPrice ?? 0,
+    search.maxPrice ?? MAX_PRICE,
   ])
 
-  // 3. Sync local state if search params are cleared/changed externally
-  useEffect(() => {
-    setLocalRange([minPriceUrl, maxPriceUrl])
-  }, [minPriceUrl, maxPriceUrl])
-
-  const activeCategories = searchParams.getAll('cat')
-  const inStock = searchParams.get('inStock') === 'true'
+  const activeCategories = search.cat ?? []
   const categories = ['watches', 'leather', 'accessories', 'jewelry']
 
-  const toggleCategory = (cat: string) => {
-    const next = new URLSearchParams(searchParams)
-    const current = next.getAll('cat')
-    next.delete('cat')
-    next.delete('page')
-    if (current.includes(cat)) {
-      current.filter((c) => c !== cat).forEach((c) => next.append('cat', c))
-    } else {
-      ;[...current, cat].forEach((c) => next.append('cat', c))
-    }
-    setSearchParams(next)
+  useEffect(() => {
+    setLocalRange([search.minPrice ?? 0, search.maxPrice ?? MAX_PRICE])
+  }, [search.minPrice, search.maxPrice])
+
+  const toggleCategory = (category: string) => {
+    onFilterChange?.()
+    const nextCats = activeCategories.includes(category)
+      ? activeCategories.filter((c) => c !== category)
+      : [...activeCategories, category]
+
+    navigate({
+      search: ((prev: ProductsSearch) => ({
+        ...prev,
+        cat: nextCats.length ? nextCats : undefined,
+        page: undefined,
+      })) as any,
+    })
   }
 
-  // 4. NEW: Apply function called only on button click
-  const handleApplyPrice = () => {
-    const next = new URLSearchParams(searchParams)
-    next.delete('page')
-
-    if (localRange[0] > 0) next.set('minPrice', String(localRange[0]))
-    else next.delete('minPrice')
-
-    if (localRange[1] < MAX_PRICE) next.set('maxPrice', String(localRange[1]))
-    else next.delete('maxPrice')
-
-    setSearchParams(next)
+  const applyPrice = () => {
+    onFilterChange?.()
+    navigate({
+      search: ((prev: ProductsSearch) => ({
+        ...prev,
+        minPrice: localRange[0] > 0 ? localRange[0] : undefined,
+        maxPrice: localRange[1] < MAX_PRICE ? localRange[1] : undefined,
+        page: undefined,
+      })) as any,
+    })
   }
 
   const toggleInStock = () => {
-    const next = new URLSearchParams(searchParams)
-    next.delete('page')
-    if (!inStock) next.set('inStock', 'true')
-    else next.delete('inStock')
-    setSearchParams(next)
+    onFilterChange?.()
+    navigate({
+      search: ((prev: ProductsSearch) => ({
+        ...prev,
+        inStock: !prev.inStock ? true : undefined,
+        page: undefined,
+      })) as any,
+    })
   }
 
   const clearFilters = () => {
-    const next = new URLSearchParams()
-    const search = searchParams.get('search')
-    const sort = searchParams.get('sort')
-    if (search) next.set('search', search)
-    if (sort) next.set('sort', sort)
-    setSearchParams(next)
-    setLocalRange([0, MAX_PRICE]) // Reset local slider
+    onFilterChange?.()
+    navigate({
+      search: ((prev: ProductsSearch) => ({
+        search: prev.search,
+        sort: prev.sort,
+      })) as any,
+    })
   }
 
   const hasFilters =
     activeCategories.length > 0 ||
-    minPriceUrl > 0 ||
-    maxPriceUrl < MAX_PRICE ||
-    inStock
+    search.inStock ||
+    search.minPrice ||
+    (search.maxPrice && search.maxPrice < MAX_PRICE)
 
   return (
     <div className={className}>
@@ -155,22 +173,20 @@ function FiltersSidebar({ className }: { className?: string }) {
           max={MAX_PRICE}
           step={50}
           value={localRange}
-          onValueChange={setLocalRange} // Only updates local state
-          className="mb-2"
+          onValueChange={setLocalRange}
         />
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>${localRange[0].toLocaleString()}</span>
-          <span>${localRange[1].toLocaleString()}</span>
+          <span>${localRange[0]}</span>
+          <span>${localRange[1]}</span>
         </div>
-
-        {/* 5. NEW: Apply Button */}
         <Button
           size="sm"
           variant="outline"
-          className="w-full text-xs h-8"
-          onClick={handleApplyPrice}
+          className="w-full text-xs"
+          onClick={applyPrice}
           disabled={
-            localRange[0] === minPriceUrl && localRange[1] === maxPriceUrl
+            localRange[0] === (search.minPrice ?? 0) &&
+            localRange[1] === (search.maxPrice ?? MAX_PRICE)
           }
         >
           {t('products.applyPrice')}
@@ -183,7 +199,7 @@ function FiltersSidebar({ className }: { className?: string }) {
       <div className="flex items-center gap-2">
         <Checkbox
           id="in-stock"
-          checked={inStock}
+          checked={!!search.inStock}
           onCheckedChange={toggleInStock}
         />
         <Label htmlFor="in-stock" className="text-sm cursor-pointer">
@@ -193,94 +209,71 @@ function FiltersSidebar({ className }: { className?: string }) {
     </div>
   )
 }
-// src/routes/Products.tsx
 
 export default function ProductsPage() {
   const navigate = useNavigate()
+  const search = useSearch({ from: '/products/' }) as ProductsSearch
   const user = useAuthStore((s) => s.user)
-  useEffect(() => {
-    if (user?.role === 'admin') {
-      navigate({ to: '/admin' })
-    }
-  }, [user, navigate])
   const { t } = useTranslation()
-  const [searchParams] = useSearchParams()
-  const [searchInput, setSearchInput] = useState(
-    searchParams.get('search') || '',
-  )
 
-  const sort = searchParams.get('sort') || 'newest'
-  const page = parseInt(searchParams.get('page') || '1')
-  const search = searchParams.get('search') || ''
-  const activeCategories = searchParams.getAll('cat')
-  const minPrice = parseInt(searchParams.get('minPrice') || '0')
-  const maxPrice = parseInt(searchParams.get('maxPrice') || String(MAX_PRICE))
-  const inStock = searchParams.get('inStock') === 'true'
+  const [searchInput, setSearchInput] = useState(search.search ?? '')
+  const [isFiltering, setIsFiltering] = useState(false)
 
-  const updateParam = (key: string, value?: string) => {
-    navigate({
-      // todo
+  useEffect(() => {
+    if (user?.role === 'admin') navigate({ to: '/admin' })
+  }, [user, navigate])
 
-      search: ((prev: Record<string, any>) => {
-        const next = { ...prev }
-
-        if (value && value !== '1') {
-          next[key] = value
-        } else {
-          delete next[key]
-        }
-
-        if (key !== 'page') {
-          delete next.page
-        }
-
-        return next
-      }) as any,
-      resetScroll: false,
-    })
-  }
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    updateParam('search', searchInput)
+    setIsFiltering(true)
+    navigate({
+      search: ((prev: ProductsSearch) => ({
+        ...prev,
+        search: searchInput || undefined,
+        page: undefined,
+      })) as any,
+    })
   }
 
-  // Fetch all products then filter client-side for sidebar filters
-  const { data, isLoading } = useProducts({
-    search,
-    sort,
-    page,
+  const { data, isLoading, isFetching } = useProducts({
+    search: search.search ?? '',
+    sort: search.sort ?? 'newest',
+    page: 1,
     pageSize: 100,
   })
 
-  // apply client-side filters, since hook only knows about initial fetch
-  let filteredProducts = data?.products || []
-  if (activeCategories.length > 0) {
-    filteredProducts = filteredProducts.filter((p) =>
-      activeCategories.includes(p.category),
-    )
-  }
-  if (minPrice > 0)
-    filteredProducts = filteredProducts.filter((p) => p.price >= minPrice)
-  if (maxPrice < MAX_PRICE)
-    filteredProducts = filteredProducts.filter((p) => p.price <= maxPrice)
-  if (inStock) filteredProducts = filteredProducts.filter((p) => p.stock > 0)
+  // Client-side filters
+  const filteredProducts = useMemo(() => {
+    let products = data?.products || []
+    if (search.cat?.length)
+      products = products.filter((p) => search.cat?.includes(p.category))
+    if (search.minPrice)
+      products = products.filter((p) => p.price >= search.minPrice!)
+    if (search.maxPrice)
+      products = products.filter((p) => p.price <= search.maxPrice!)
+    if (search.inStock) products = products.filter((p) => p.stock > 0)
+    return products
+  }, [data, search.cat, search.minPrice, search.maxPrice, search.inStock])
 
   const pageSize = 6
-  const total = filteredProducts.length
+  const currentPage = search.page ?? 1
   const paginated = filteredProducts.slice(
-    (page - 1) * pageSize,
-    page * pageSize,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   )
+  const totalPages = Math.ceil(filteredProducts.length / pageSize)
+  const showLoading = isLoading || isFetching || isFiltering
 
-  const dataWithPagination = {
-    products: paginated,
-    total,
-    totalPages: Math.ceil(total / pageSize),
-    page,
-  }
+  // Reset filtering state after filters applied
+  useEffect(() => {
+    if (!isLoading && !isFetching && isFiltering) {
+      const timer = setTimeout(() => setIsFiltering(false), 200)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoading, isFetching, isFiltering])
 
   return (
-    <main className="flex-1 justify-center  mx-auto container p-2">
+    <main className="flex-1 justify-center mx-auto container p-2">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -303,7 +296,19 @@ export default function ProductsPage() {
           />
         </form>
 
-        <Select value={sort} onValueChange={(v) => updateParam('sort', v)}>
+        <Select
+          value={search.sort ?? 'newest'}
+          onValueChange={(v) => {
+            setIsFiltering(true)
+            navigate({
+              search: ((prev: ProductsSearch) => ({
+                ...prev,
+                sort: v,
+                page: undefined,
+              })) as any,
+            })
+          }}
+        >
           <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder={t('products.sortBy')} />
           </SelectTrigger>
@@ -316,7 +321,6 @@ export default function ProductsPage() {
           </SelectContent>
         </Select>
 
-        {/* Mobile filter trigger */}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" className="sm:hidden gap-2">
@@ -327,43 +331,54 @@ export default function ProductsPage() {
             <SheetHeader>
               <SheetTitle>{t('products.filters')}</SheetTitle>
             </SheetHeader>
-            <FiltersSidebar className="mt-4" />
+            <FiltersSidebar
+              onFilterChange={() => setIsFiltering(true)}
+              className="mt-4"
+            />
           </SheetContent>
         </Sheet>
       </div>
 
       <div className="flex gap-8">
-        {/* Desktop sidebar */}
         <aside className="hidden sm:block w-56 shrink-0">
           <div className="sticky top-24 rounded-lg border bg-card p-4">
-            <FiltersSidebar />
+            <FiltersSidebar onFilterChange={() => setIsFiltering(true)} />
           </div>
         </aside>
 
-        {/* Product grid */}
         <div className="flex-1">
-          {isLoading ? (
+          {showLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
             </div>
-          ) : dataWithPagination.products.length === 0 ? (
-            <p className="text-center text-muted-foreground py-12">
-              {t('products.noResults')}
-            </p>
+          ) : paginated.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">
+                {t('products.noResults')} 🤣
+              </p>
+            </div>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {dataWithPagination.products.map((product, i) => (
+                {paginated.map((product, i) => (
                   <ProductCard key={product.id} product={product} index={i} />
                 ))}
               </div>
-              {dataWithPagination.totalPages > 1 && (
+              {totalPages > 1 && (
                 <TablePagination
-                  page={dataWithPagination.page}
-                  totalPages={dataWithPagination.totalPages}
-                  onPageChange={(p) => updateParam('page', String(p))}
+                  page={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(p) => {
+                    setIsFiltering(true)
+                    navigate({
+                      search: ((prev: ProductsSearch) => ({
+                        ...prev,
+                        page: p,
+                      })) as any,
+                    })
+                  }}
                 />
               )}
             </>

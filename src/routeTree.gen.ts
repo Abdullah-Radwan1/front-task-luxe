@@ -15,11 +15,13 @@ import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as OrderSuccesscopyRouteImport } from './routes/orderSuccess copy'
 import { Route as OrderSuccessRouteImport } from './routes/orderSuccess'
 import { Route as NotFoundRouteImport } from './routes/notFound'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProductsIdRouteImport } from './routes/products/$id'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminAdminRouteImport } from './routes/admin/_admin'
@@ -29,7 +31,6 @@ import { Route as AdminAdminOrdersRouteImport } from './routes/admin/_admin.orde
 import { Route as AdminAdminDashboardRouteImport } from './routes/admin/_admin.dashboard'
 
 const ProductsIndexLazyRouteImport = createFileRoute('/products/')()
-const AdminIndexLazyRouteImport = createFileRoute('/admin/')()
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -49,6 +50,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderSuccesscopyRoute = OrderSuccesscopyRouteImport.update({
+  id: '/orderSuccess copy',
+  path: '/orderSuccess copy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderSuccessRoute = OrderSuccessRouteImport.update({
@@ -83,11 +89,11 @@ const ProductsIndexLazyRoute = ProductsIndexLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/products/index.lazy').then((d) => d.Route),
 )
-const AdminIndexLazyRoute = AdminIndexLazyRouteImport.update({
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/admin/index.lazy').then((d) => d.Route))
+} as any)
 const ProductsIdRoute = ProductsIdRouteImport.update({
   id: '/products/$id',
   path: '/products/$id',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notFound': typeof NotFoundRoute
   '/orderSuccess': typeof OrderSuccessRoute
+  '/orderSuccess copy': typeof OrderSuccesscopyRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
@@ -137,7 +144,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminAdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/products/$id': typeof ProductsIdRoute
-  '/admin/': typeof AdminIndexLazyRoute
+  '/admin/': typeof AdminIndexRoute
   '/products/': typeof ProductsIndexLazyRoute
   '/admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/orders': typeof AdminAdminOrdersRoute
@@ -150,11 +157,12 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notFound': typeof NotFoundRoute
   '/orderSuccess': typeof OrderSuccessRoute
+  '/orderSuccess copy': typeof OrderSuccesscopyRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/wishlist': typeof WishlistRoute
-  '/admin': typeof AdminIndexLazyRoute
+  '/admin': typeof AdminIndexRoute
   '/admin/login': typeof AdminLoginRoute
   '/products/$id': typeof ProductsIdRoute
   '/products': typeof ProductsIndexLazyRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notFound': typeof NotFoundRoute
   '/orderSuccess': typeof OrderSuccessRoute
+  '/orderSuccess copy': typeof OrderSuccesscopyRoute
   '/orders': typeof OrdersRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
@@ -177,7 +186,7 @@ export interface FileRoutesById {
   '/admin/_admin': typeof AdminAdminRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/products/$id': typeof ProductsIdRoute
-  '/admin/': typeof AdminIndexLazyRoute
+  '/admin/': typeof AdminIndexRoute
   '/products/': typeof ProductsIndexLazyRoute
   '/admin/_admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/_admin/orders': typeof AdminAdminOrdersRoute
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notFound'
     | '/orderSuccess'
+    | '/orderSuccess copy'
     | '/orders'
     | '/profile'
     | '/register'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notFound'
     | '/orderSuccess'
+    | '/orderSuccess copy'
     | '/orders'
     | '/profile'
     | '/register'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/notFound'
     | '/orderSuccess'
+    | '/orderSuccess copy'
     | '/orders'
     | '/profile'
     | '/register'
@@ -252,6 +264,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NotFoundRoute: typeof NotFoundRoute
   OrderSuccessRoute: typeof OrderSuccessRoute
+  OrderSuccesscopyRoute: typeof OrderSuccesscopyRoute
   OrdersRoute: typeof OrdersRoute
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
@@ -259,7 +272,7 @@ export interface RootRouteChildren {
   AdminAdminRoute: typeof AdminAdminRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
   ProductsIdRoute: typeof ProductsIdRoute
-  AdminIndexLazyRoute: typeof AdminIndexLazyRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   ProductsIndexLazyRoute: typeof ProductsIndexLazyRoute
 }
 
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orderSuccess copy': {
+      id: '/orderSuccess copy'
+      path: '/orderSuccess copy'
+      fullPath: '/orderSuccess copy'
+      preLoaderRoute: typeof OrderSuccesscopyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orderSuccess': {
@@ -339,7 +359,7 @@ declare module '@tanstack/react-router' {
       id: '/admin/'
       path: '/admin'
       fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexLazyRouteImport
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/$id': {
@@ -418,6 +438,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NotFoundRoute: NotFoundRoute,
   OrderSuccessRoute: OrderSuccessRoute,
+  OrderSuccesscopyRoute: OrderSuccesscopyRoute,
   OrdersRoute: OrdersRoute,
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
@@ -425,7 +446,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAdminRoute: AdminAdminRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   ProductsIdRoute: ProductsIdRoute,
-  AdminIndexLazyRoute: AdminIndexLazyRoute,
+  AdminIndexRoute: AdminIndexRoute,
   ProductsIndexLazyRoute: ProductsIndexLazyRoute,
 }
 export const routeTree = rootRouteImport
