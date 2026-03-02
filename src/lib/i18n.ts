@@ -197,6 +197,7 @@ const resources = {
         orders: 'Orders',
         users: 'Users',
         login: 'Admin Login',
+        showingProducts: 'showing Products',
         email: 'Email',
         password: 'Password',
         signIn: 'Sign In',

@@ -59,7 +59,7 @@ import {
 } from '@/components/ui/select'
 import type { Product } from '@/lib/mock-data'
 
-const PAGE_SIZE = 5
+const PAGE_SIZE = 4
 
 type ProductForm = {
   name: string
@@ -187,7 +187,7 @@ export default function AdminProducts() {
     setDialogOpen(false)
     setIsSubmitting(false)
   }
-
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]) // Added for the selection logic
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -328,7 +328,7 @@ export default function AdminProducts() {
                   transition={{ delay: i * 0.05 }}
                   className="group hover:bg-muted/50 transition-colors"
                 >
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="">{product.name}</TableCell>
                   <TableCell>
                     <Badge
                       className={`${categoryColors[product.category as keyof typeof categoryColors]} capitalize`}
@@ -369,11 +369,33 @@ export default function AdminProducts() {
       </div>
 
       {/* Pagination */}
-      <TablePagination
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
+        <div className="text-sm text-muted-foreground">
+          Showing <span>{(page - 1) * PAGE_SIZE + 1}</span> to{' '}
+          <span>{Math.min(page * PAGE_SIZE, processedProducts.length)}</span> of{' '}
+          <span>{processedProducts.length}</span> products
+          {selectedProducts.length > 0 && (
+            <span className="ml-1 text-primary animate-in fade-in slide-in-from-left-1">
+              · {selectedProducts.length} selected
+            </span>
+          )}
+        </div>
+
+        <TablePagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => {
+            setPage(newPage)
+            setSelectedProducts([]) // Clear selection on page change like your example
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+        />
+      </motion.div>
 
       {/* Product Form Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
