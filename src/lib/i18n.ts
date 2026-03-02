@@ -11,6 +11,7 @@ const resources = {
       nav: {
         home: 'Home',
         shop: 'Shop',
+        wishlist: 'wishlist',
         cart: 'Cart',
         admin: 'Admin',
         login: 'Login',
@@ -323,6 +324,7 @@ const resources = {
       },
       nav: {
         profile: 'حسابي',
+        wishlist: 'المفضله',
         home: 'الرئيسية',
         shop: 'المتجر',
         cart: 'السلة',

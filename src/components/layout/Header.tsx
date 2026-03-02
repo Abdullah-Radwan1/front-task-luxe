@@ -7,7 +7,6 @@ import {
   Globe,
   User,
   LogOut,
-  LayoutDashboard,
   Settings,
   Heart,
   Home,
@@ -49,7 +48,6 @@ import { useTheme } from '@/components/ThemeProvider'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
 import { useState } from 'react'
-import { Separator } from '@/components/ui/separator'
 
 export function Header() {
   const { t, i18n } = useTranslation()
@@ -78,7 +76,6 @@ export function Header() {
   if (user?.role === 'admin') return null
   if (['/login', '/register', '/admin/login'].includes(pathname)) return null
 
-  // Helper for mobile links to reduce repetition
   const MobileNavLink = ({ to, icon: Icon, children, className = '' }: any) => (
     <Link
       to={to}
@@ -91,7 +88,9 @@ export function Header() {
         </div>
         {children}
       </div>
-      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      <ChevronRight
+        className={`h-4 w-4 text-muted-foreground ${i18n.language === 'ar' ? 'rotate-180' : ''}`}
+      />
     </Link>
   )
 
@@ -100,6 +99,7 @@ export function Header() {
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
         className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md flex justify-center"
       >
         <div className="container flex h-16 items-center justify-between px-4">
@@ -134,7 +134,6 @@ export function Header() {
 
           {/* RIGHT ACTIONS */}
           <div className="flex items-center gap-1 md:gap-2">
-            {/* Theme & Lang (Desktop Only) */}
             <div className="hidden sm:flex items-center gap-1 border-r pr-2 mr-2">
               <Button
                 variant="ghost"
@@ -185,7 +184,7 @@ export function Header() {
               </AnimatePresence>
             </Button>
 
-            {/* AUTH DROPDOWN (Desktop) */}
+            {/* AUTH DROPDOWN */}
             <div className="hidden md:flex">
               {isAuthenticated ? (
                 <DropdownMenu>
@@ -231,8 +230,8 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent
-                side={i18n.language === 'ar' ? 'left' : 'right'}
-                className="w-[85%] sm:w-[400px] flex flex-col p-0"
+                side={i18n.language === 'ar' ? 'right' : 'left'}
+                className="w-[85%] sm:w-80 flex flex-col p-0 transition-transform duration-500 ease-in-out"
               >
                 <SheetHeader className="p-6 text-left border-b bg-muted/30">
                   <div className="flex items-center gap-4">
@@ -243,8 +242,16 @@ export function Header() {
                         <User />
                       )}
                     </div>
-                    <div>
-                      <SheetTitle className="text-left">
+                    <div
+                      className={
+                        i18n.language === 'ar' ? 'text-right' : 'text-left'
+                      }
+                    >
+                      <SheetTitle
+                        className={
+                          i18n.language === 'ar' ? 'text-right' : 'text-left'
+                        }
+                      >
                         {isAuthenticated ? user?.name : 'Welcome to LUXE'}
                       </SheetTitle>
                       <p className="text-xs text-muted-foreground">
@@ -267,13 +274,11 @@ export function Header() {
                     <MobileNavLink to="/wishlist" icon={Heart}>
                       {t('nav.wishlist')}
                     </MobileNavLink>
-
                     {isAuthenticated && (
                       <MobileNavLink to="/profile" icon={Settings}>
                         Settings
                       </MobileNavLink>
                     )}
-
                     <MobileNavLink
                       to="/admin/login"
                       icon={ShieldCheck}
@@ -283,27 +288,25 @@ export function Header() {
                     </MobileNavLink>
                   </nav>
 
-                  <div className="mt-8">
-                    {!isAuthenticated && (
-                      <div className="grid grid-cols-2 gap-4">
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          asChild
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          <Link to="/login">{t('nav.login')}</Link>
-                        </Button>
-                        <Button
-                          className="w-full"
-                          asChild
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          <Link to="/register">{t('nav.register')}</Link>
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                  {!isAuthenticated && (
+                    <div className="mt-8 grid grid-cols-2 gap-4">
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        asChild
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <Link to="/login">{t('nav.login')}</Link>
+                      </Button>
+                      <Button
+                        className="w-full"
+                        asChild
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <Link to="/register">{t('nav.register')}</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <SheetFooter className="p-6 border-t mt-auto bg-muted/20">
@@ -357,7 +360,7 @@ export function Header() {
         </div>
       </motion.header>
 
-      {/* Logout Confirmation Dialog */}
+      {/* Logout Dialog */}
       <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -369,7 +372,7 @@ export function Header() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t('nav.logoutConfirmMessage') ||
-                'Are you sure you want to log out? You will need to sign in again to access your account.'}
+                'Are you sure you want to log out?'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

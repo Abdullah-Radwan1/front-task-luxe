@@ -7,15 +7,8 @@ import { useNavigate } from '@tanstack/react-router'
 
 export function CartDrawer() {
   const { t } = useTranslation()
-  const {
-    items,
-    isOpen,
-    setCartOpen,
-    removeItem,
-    updateQuantity,
-    totalPrice,
-    clearCart,
-  } = useCartStore()
+  const { items, isOpen, setCartOpen, removeItem, updateQuantity, totalPrice } =
+    useCartStore()
   const navigate = useNavigate()
   return (
     <AnimatePresence>
