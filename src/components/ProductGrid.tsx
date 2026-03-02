@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,7 +14,7 @@ import {
 } from '@/components/ui/select'
 import { ProductCard } from '@/components/ProductCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { api } from '@/lib/mock-data'
+import { useProducts } from '@/lib/api-hooks'
 
 export function ProductGrid() {
   const { t } = useTranslation()
@@ -53,10 +52,12 @@ export function ProductGrid() {
     updateParam({ search: searchInput })
   }
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['products', category, sort, page, search],
-    queryFn: () =>
-      api.getProducts({ category, sort, page, search, pageSize: 6 }),
+  const { data, isLoading } = useProducts({
+    category: category === 'all' ? undefined : category,
+    sort,
+    page,
+    search,
+    pageSize: 6,
   })
 
   const categories = ['all', 'watches', 'leather', 'accessories', 'jewelry']

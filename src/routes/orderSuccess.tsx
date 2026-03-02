@@ -22,7 +22,7 @@ export default function OrderSuccess() {
 
   // Find the order by ID
   const order = orders.find((o) => o.id === 'orderId')
-
+  // we can get the oder from zustand store instead of fetching btw
   // Redirect if no order found or user not authenticated
   if (!user) {
     navigate({ to: '/login' })
@@ -91,7 +91,7 @@ export default function OrderSuccess() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-2"
           >
-            <Card className="bg-gradient-to-br from-card to-muted/30">
+            <Card className="bg-linear-to-br from-card to-muted/30">
               <CardHeader>
                 <CardTitle>{t('orderSuccess.orderDetails')}</CardTitle>
               </CardHeader>
@@ -167,7 +167,7 @@ export default function OrderSuccess() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-500/20">
+            <Card className="bg-linear-to-br from-green-500/5 to-green-500/10 border-green-500/20">
               <CardHeader>
                 <CardTitle className="text-green-700 dark:text-green-400">
                   {t('orderSuccess.confirmationSent')}
@@ -175,7 +175,7 @@ export default function OrderSuccess() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Mail className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
+                  <Mail className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-1" />
                   <div>
                     <p className="text-sm text-muted-foreground">
                       {t('orderSuccess.emailSent')}

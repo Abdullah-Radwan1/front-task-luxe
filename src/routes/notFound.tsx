@@ -1,11 +1,10 @@
-import React from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { createFileRoute } from "@tanstack/react-router";
-export const Route = createFileRoute("/notFound")({
+import { useNavigate } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+export const Route = createFileRoute('/notFound')({
   component: NotFound,
-});
+})
 export default function NotFound() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
@@ -19,7 +18,7 @@ export default function NotFound() {
         <div className="glass rounded-2xl p-8 md:p-12 shadow-xl border border-white/10 bg-white/5 backdrop-blur-md">
           <div className="text-center space-y-8">
             <div className="space-y-2">
-              <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">
+              <h1 className="text-8xl md:text-9xl font-bold bg-linear-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">
                 404
               </h1>
               <div className="w-24 h-1 bg-accent/30 mx-auto rounded-full" />
@@ -75,7 +74,7 @@ export default function NotFound() {
               </button>
 
               <button
-                onClick={() => navigate({ to: "/" })}
+                onClick={() => navigate({ to: '/' })}
                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all font-medium text-sm w-full sm:w-auto shadow-lg flex items-center justify-center gap-2"
               >
                 <svg
@@ -98,5 +97,5 @@ export default function NotFound() {
         </div>
       </div>
     </div>
-  );
+  )
 }

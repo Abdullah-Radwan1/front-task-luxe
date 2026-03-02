@@ -1,16 +1,27 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useState, useMemo } from 'react'
 import { useSearchParams } from '@/lib/useSearchParams'
 import { useTranslation } from 'react-i18next'
+import { useProducts } from '@/lib/api-hooks'
+import { motion } from 'framer-motion'
 
-import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react'
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  Package,
+  Tag,
+  DollarSign,
+  Layers,
+  FolderTree,
+} from 'lucide-react'
+
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Table,
   TableBody,
@@ -24,6 +35,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import {
   AlertDialog,
@@ -35,26 +47,40 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { TablePagination } from '@/components/TablePagination'
-import { api, type Product } from '@/lib/mock-data'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import type { Product } from '@/lib/mock-data'
 
 const PAGE_SIZE = 5
 
-const productSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-  price: z.coerce.number().positive(),
-  stock: z.coerce.number().int().min(0),
-  category: z.enum(['watches', 'leather', 'accessories', 'jewelry']),
-})
+type ProductForm = {
+  name: string
+  description: string
+  price: number
+  stock: number
+  category: 'watches' | 'leather' | 'accessories' | 'jewelry'
+}
 
-type ProductForm = z.infer<typeof productSchema>
 export const Route = createFileRoute('/admin/_admin/products')({
   component: AdminProducts,
 })
+
+// Category colors
+const categoryColors = {
+  watches: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  leather: 'bg-amber-700/10 text-amber-700 border-amber-700/20',
+  accessories: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+  jewelry: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
+}
+
 export default function AdminProducts() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -62,20 +88,25 @@ export default function AdminProducts() {
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { data: allProducts, isLoading } = useQuery({
-    queryKey: ['admin-products'],
-    queryFn: () => api.getProducts({ pageSize: 100 }),
-  })
+  const { data: allProducts, isLoading } = useProducts({ pageSize: 100 })
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
     setValue,
+    formState: { errors },
+    clearErrors,
   } = useForm<ProductForm>({
-    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      price: 0,
+      stock: 0,
+      category: 'watches',
+    },
   })
 
   const openEdit = (product: Product) => {
@@ -85,7 +116,7 @@ export default function AdminProducts() {
       description: product.description,
       price: product.price,
       stock: product.stock,
-      category: product.category,
+      category: product.category as any,
     })
     setDialogOpen(true)
   }
@@ -102,32 +133,42 @@ export default function AdminProducts() {
     setDialogOpen(true)
   }
 
-  const onSubmit = (data: ProductForm) => {
-    // Mock save
-    setDialogOpen(false)
-  }
-
   const searchQ = searchParams.get('q') || ''
   const sortCol = searchParams.get('sort') || 'name'
   const sortDir = searchParams.get('dir') || 'asc'
+  const categoryFilter = searchParams.get('category') || 'all'
 
-  let filtered = allProducts?.products || []
-  if (searchQ) {
-    const q = searchQ.toLowerCase()
-    filtered = filtered.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.category.includes(q),
-    )
-  }
+  const processedProducts = useMemo(() => {
+    let list = allProducts?.products ?? []
 
-  const sorted = [...filtered].sort((a, b) => {
+    if (searchQ) {
+      const q = searchQ.toLowerCase()
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q),
+      )
+    }
+
+    if (categoryFilter !== 'all') {
+      list = list.filter((p) => p.category === categoryFilter)
+    }
+
     const dir = sortDir === 'asc' ? 1 : -1
-    if (sortCol === 'price') return (a.price - b.price) * dir
-    if (sortCol === 'stock') return (a.stock - b.stock) * dir
-    return a.name.localeCompare(b.name) * dir
-  })
+    list = [...list].sort((a, b) => {
+      if (sortCol === 'price') return (a.price - b.price) * dir
+      if (sortCol === 'stock') return (a.stock - b.stock) * dir
+      return a.name.localeCompare(b.name) * dir
+    })
 
-  const totalPages = Math.ceil(sorted.length / PAGE_SIZE)
-  const paginated = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    return list
+  }, [allProducts, searchQ, categoryFilter, sortCol, sortDir])
+
+  const totalPages = Math.ceil(processedProducts.length / PAGE_SIZE)
+  const paginated = processedProducts.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  )
 
   const toggleSort = (col: string) => {
     const next = new URLSearchParams(searchParams)
@@ -140,162 +181,289 @@ export default function AdminProducts() {
     setSearchParams(next)
   }
 
+  const onSubmit = async (data: ProductForm) => {
+    setIsSubmitting(true)
+    await new Promise((r) => setTimeout(r, 500))
+    setDialogOpen(false)
+    setIsSubmitting(false)
+  }
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl items-baseline flex gap-2 font-bold mb-6">
-          {t('admin.products')} <Package size={24} />
-        </h1>
-        <Button
-          onClick={openAdd}
-          className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2"
-        >
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Package size={30} className="text-primary" />
+          </div>
+          <h1 className="text-3xl font-display font-bold">
+            {t('admin.products')}
+          </h1>
+        </div>
+        <Button onClick={openAdd} className="gap-2">
           <Plus className="h-4 w-4" /> {t('admin.addProduct')}
         </Button>
       </div>
 
-      <div className="relative max-w-sm mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder={t('admin.search')}
-          value={searchQ}
-          onChange={(e) => {
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={searchQ}
+            placeholder={t('admin.search')}
+            onChange={(e) => {
+              const next = new URLSearchParams(searchParams)
+              e.target.value ? next.set('q', e.target.value) : next.delete('q')
+              setSearchParams(next)
+              setPage(1)
+            }}
+            className="pl-9"
+          />
+        </div>
+
+        <Select
+          value={categoryFilter}
+          onValueChange={(value) => {
             const next = new URLSearchParams(searchParams)
-            if (e.target.value) next.set('q', e.target.value)
-            else next.delete('q')
+            value === 'all'
+              ? next.delete('category')
+              : next.set('category', value)
             setSearchParams(next)
+            setPage(1)
           }}
-          className="pl-9"
-        />
+        >
+          <SelectTrigger className="w-45">
+            <FolderTree className="h-4 w-4 mr-2 text-muted-foreground" />
+            <SelectValue placeholder={t('admin.category')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{t('admin.all')}</SelectItem>
+            <SelectItem value="watches">{t('categories.watches')}</SelectItem>
+            <SelectItem value="leather">{t('categories.leather')}</SelectItem>
+            <SelectItem value="accessories">
+              {t('categories.accessories')}
+            </SelectItem>
+            <SelectItem value="jewelry">{t('categories.jewelry')}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="rounded-lg border overflow-hidden">
+      {/* Table */}
+      <div className="rounded-lg border bg-card overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead
-                className="cursor-pointer"
                 onClick={() => toggleSort('name')}
+                className="cursor-pointer"
               >
-                {t('admin.name')}{' '}
-                {sortCol === 'name' && (sortDir === 'asc' ? '↑' : '↓')}
+                <div className="flex items-center gap-1">
+                  <Tag className="h-4 w-4" />
+                  {t('admin.name')}
+                  {sortCol === 'name' && (sortDir === 'asc' ? ' ↑' : ' ↓')}
+                </div>
               </TableHead>
               <TableHead>{t('admin.category')}</TableHead>
               <TableHead
-                className="cursor-pointer"
                 onClick={() => toggleSort('price')}
+                className="cursor-pointer"
               >
-                {t('admin.price')}{' '}
-                {sortCol === 'price' && (sortDir === 'asc' ? '↑' : '↓')}
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-4 w-4" />
+                  {t('admin.price')}
+                  {sortCol === 'price' && (sortDir === 'asc' ? ' ↑' : ' ↓')}
+                </div>
               </TableHead>
               <TableHead
-                className="cursor-pointer"
                 onClick={() => toggleSort('stock')}
+                className="cursor-pointer"
               >
-                {t('admin.stock')}{' '}
-                {sortCol === 'stock' && (sortDir === 'asc' ? '↑' : '↓')}
+                <div className="flex items-center gap-1">
+                  <Layers className="h-4 w-4" />
+                  {t('admin.stock')}
+                  {sortCol === 'stock' && (sortDir === 'asc' ? ' ↑' : ' ↓')}
+                </div>
               </TableHead>
-              <TableHead>{t('admin.actions')}</TableHead>
+              <TableHead className="text-right">{t('admin.actions')}</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
-            {isLoading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <TableCell key={j}>
-                        <Skeleton className="h-4 w-20" />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : paginated.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium">
-                      {product.name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">
-                        {t(`categories.${product.category}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>${product.price.toLocaleString()}</TableCell>
-                    <TableCell>{product.stock}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEdit(product)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteProduct(product)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-8 w-20 ml-auto" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : paginated.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="h-32 text-center text-muted-foreground"
+                >
+                  {t('admin.noProductsFound')}
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginated.map((product, i) => (
+                <motion.tr
+                  key={product.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="group hover:bg-muted/50 transition-colors"
+                >
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={`${categoryColors[product.category as keyof typeof categoryColors]} capitalize`}
+                    >
+                      {t(`categories.${product.category}`)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>${product.price}</TableCell>
+                  <TableCell>
+                    <span
+                      className={product.stock < 10 ? 'text-amber-500' : ''}
+                    >
+                      {product.stock}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => openEdit(product)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => setDeleteProduct(product)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </motion.tr>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
       <TablePagination
         page={page}
         totalPages={totalPages}
         onPageChange={setPage}
       />
 
+      {/* Product Form Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              {editProduct ? (
+                <Pencil className="h-5 w-5" />
+              ) : (
+                <Plus className="h-5 w-5" />
+              )}
               {editProduct ? t('admin.editProduct') : t('admin.addProduct')}
             </DialogTitle>
           </DialogHeader>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label>{t('admin.name')}</Label>
-              <Input {...register('name')} />
-              {errors.name && (
-                <p className="text-xs text-destructive">
-                  {errors.name.message}
-                </p>
-              )}
+              <Input {...register('name', { required: true })} />
             </div>
+
             <div className="space-y-2">
               <Label>{t('admin.description')}</Label>
-              <Input {...register('description')} />
+              <Textarea
+                {...register('description', { required: true })}
+                rows={3}
+              />
             </div>
+
+            <div className="space-y-2">
+              <Label>{t('admin.category')}</Label>
+              <Select
+                defaultValue="watches"
+                onValueChange={(v: any) => setValue('category', v)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="watches">
+                    {t('categories.watches')}
+                  </SelectItem>
+                  <SelectItem value="leather">
+                    {t('categories.leather')}
+                  </SelectItem>
+                  <SelectItem value="accessories">
+                    {t('categories.accessories')}
+                  </SelectItem>
+                  <SelectItem value="jewelry">
+                    {t('categories.jewelry')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('admin.price')}</Label>
-                <Input {...register('price')} type="number" step="0.01" />
+                <Input
+                  type="number"
+                  {...register('price', {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>{t('admin.stock')}</Label>
-                <Input {...register('stock')} type="number" />
+                <Input
+                  type="number"
+                  {...register('stock', {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
+                />
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
+
+            <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                {t('admin.cancel')}
+                Cancel
               </Button>
-              <Button
-                type="submit"
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-              >
-                {t('admin.save')}
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Saving...' : editProduct ? 'Update' : 'Create'}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
@@ -307,18 +475,19 @@ export default function AdminProducts() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('admin.deleteProduct')}</AlertDialogTitle>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('admin.confirmDelete')}
+              Are you sure you want to delete "{deleteProduct?.name}"? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('admin.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => setDeleteProduct(null)}
-              className="bg-destructive text-destructive-foreground"
+              className="bg-destructive"
             >
-              {t('admin.deleteProduct')}
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

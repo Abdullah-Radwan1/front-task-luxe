@@ -12,7 +12,7 @@ export const Route = createRootRoute({
     const allowPublic =
       location.pathname === '/login' ||
       location.pathname === '/register' ||
-      location.pathname === '/admin/login'
+      location.pathname.startsWith('/admin/login')
 
     if (!isAuthenticated && !allowPublic) {
       if (location.pathname.startsWith('/admin')) {
