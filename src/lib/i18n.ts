@@ -18,6 +18,7 @@ const resources = {
         logout: 'Logout',
         my_account: 'My Account',
         backToHome: 'back to home',
+        profile: 'profile',
       },
       user: {
         login: 'Login',
@@ -90,7 +91,10 @@ const resources = {
           'Hand-selected premium pieces that define luxury and elegance. Each item tells a unique story of craftsmanship.',
         bestSeller: 'Best Seller',
         exploreCollection: 'Explore Full Collection',
+        pick: 'Pick',
+        quickView: 'Quick View',
       },
+
       hero: {
         title: 'Timeless Elegance',
         subtitle: 'Curated luxury essentials for the modern connoisseur',
@@ -123,6 +127,7 @@ const resources = {
         inStockOnly: 'In Stock Only',
         browseAll: 'Browse our complete collection',
         relatedProducts: 'Related Products',
+        applyPrice: 'Apply Search',
         features: {
           freeShipping: 'Free shipping',
           freeShippingDesc: 'Fast, insured delivery worldwide',
@@ -134,6 +139,11 @@ const resources = {
           qualityAssuredDesc: 'Hand-picked premium materials',
         },
       },
+      sort: {
+        newest: 'Newest Arrivals',
+        priceLow: 'Price: Low to High',
+        priceHigh: 'Price: High to Low',
+      },
       cart: {
         title: 'Shopping Cart',
         empty: 'Your cart is empty',
@@ -143,6 +153,7 @@ const resources = {
         items: 'items',
       },
       categories: {
+        all: 'All',
         watches: 'Watches',
         leather: 'Leather Goods',
         accessories: 'Accessories',
@@ -187,6 +198,7 @@ const resources = {
         cancelled: 'Cancelled',
         search: 'Search...',
       },
+
       checkout: {
         title: 'Checkout',
         subtitle: 'Complete your purchase securely',
@@ -260,6 +272,7 @@ const resources = {
         notFoundDesc: 'العنصر المطلوب غير موجود.', // Changed ; to ,
       },
       nav: {
+        profile: 'حسابي',
         home: 'الرئيسية',
         shop: 'المتجر',
         cart: 'السلة',
@@ -334,14 +347,17 @@ const resources = {
         continueShopping: 'متابعة التسوق',
       },
       featured: {
-        editorChoice: 'اختيار المحرر', // Added missing key
-        titlePrefix: 'هذا الأسبوع', // Added missing key
-        titleHighlight: 'مميز', // Added missing key
+        editorChoice: 'اختيار المحرر',
+        titlePrefix: 'مختارات',
+        titleHighlight: 'هذا الأسبوع',
         description:
-          'قطع مختارة بعناية تجسد الفخامة والأناقة. كل قطعة تحكي قصة فريدة من الحرفية.', // Added missing key
-        bestSeller: 'الأكثر مبيعاً', // Added missing key
-        exploreCollection: 'استكشف المجموعة الكاملة', // Added missing key
+          'قطع فاخرة مختارة بعناية تجسد الرقي والأناقة. كل قطعة تحكي قصة فريدة من الإتقان والحرفية.',
+        bestSeller: 'الأكثر مبيعاً',
+        exploreCollection: 'استكشف المجموعة الكاملة',
+        pick: 'مختار',
+        quickView: 'عرض سريع',
       },
+
       hero: {
         title: 'أناقة خالدة',
         subtitle: 'مجموعة فاخرة مختارة للذواقة العصري',
@@ -374,6 +390,7 @@ const resources = {
         inStockOnly: 'المتوفر فقط',
         browseAll: 'تصفح مجموعتنا الكاملة',
         relatedProducts: 'منتجات ذات صلة',
+        applyPrice: 'تطبيق',
         features: {
           freeShipping: 'شحن مجاني',
           freeShippingDesc: 'توصيل سريع ومؤمن حول العالم',
@@ -394,10 +411,16 @@ const resources = {
         items: 'عناصر',
       },
       categories: {
+        all: 'all',
         watches: 'ساعات',
         leather: 'جلود',
         accessories: 'إكسسوارات',
         jewelry: 'مجوهرات',
+      },
+      sort: {
+        newest: 'أحدث المنتجات',
+        priceLow: 'السعر: من الأقل للأعلى',
+        priceHigh: 'السعر: من الأعلى للأقل',
       },
       admin: {
         dashboard: 'لوحة التحكم',

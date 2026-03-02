@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-import { User, Mail, LogOut, ShoppingBag, Heart, Settings } from 'lucide-react'
+import { User, LogOut, ShoppingBag, Heart } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
 export const Route = createFileRoute('/profile')({
   component: Profile,

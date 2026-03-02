@@ -219,14 +219,28 @@ export default function ProductsPage() {
   const maxPrice = parseInt(searchParams.get('maxPrice') || String(MAX_PRICE))
   const inStock = searchParams.get('inStock') === 'true'
 
-  const updateParam = (key: string, value: string) => {
-    const next = new URLSearchParams(searchParams)
-    if (value && value !== '1') next.set(key, value)
-    else next.delete(key)
-    if (key !== 'page') next.delete('page')
-    setSearchParams(next)
-  }
+  const updateParam = (key: string, value?: string) => {
+    navigate({
+      // todo
 
+      search: ((prev: Record<string, any>) => {
+        const next = { ...prev }
+
+        if (value && value !== '1') {
+          next[key] = value
+        } else {
+          delete next[key]
+        }
+
+        if (key !== 'page') {
+          delete next.page
+        }
+
+        return next
+      }) as any,
+      resetScroll: false,
+    })
+  }
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     updateParam('search', searchInput)
@@ -270,7 +284,7 @@ export default function ProductsPage() {
   })
 
   return (
-    <main className="flex-1 justify-center  mx-auto container py-8">
+    <main className="flex-1 justify-center  mx-auto container p-2">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -294,7 +308,7 @@ export default function ProductsPage() {
         </form>
 
         <Select value={sort} onValueChange={(v) => updateParam('sort', v)}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder={t('products.sortBy')} />
           </SelectTrigger>
           <SelectContent>

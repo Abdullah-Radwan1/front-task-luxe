@@ -25,7 +25,7 @@ export const AppLayout = ({ children }: { children?: ReactNode }) => (
         <Sonner />
         <div className=" mx-auto aligcn-middle  ">
           <Header />
-          <main className="flex-1 mx-auto ">{children}</main>
+          <main className="flex-1 mx-auto  ">{children}</main>
           <Footer />
           <CartDrawer />
         </div>

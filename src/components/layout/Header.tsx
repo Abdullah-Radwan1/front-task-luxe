@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import {
   ShoppingBag,
   Sun,
@@ -48,7 +48,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { isAuthenticated, user, logout } = useAuthStore()
   const location = useLocation()
-
+  const navigate = useNavigate()
   const pathname = (location as any)?.pathname || window.location.pathname
 
   const switchLang = () => {
@@ -185,12 +185,15 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="w-full cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" /> Settings
+                      <Settings className="mr-2 h-4 w-4" /> {t('nav.profile')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={logout}
+                    onClick={() => {
+                      logout()
+                      navigate({ to: '/login' })
+                    }}
                     className="text-destructive cursor-pointer"
                   >
                     <LogOut className="mr-2 h-4 w-4" /> {t('nav.logout')}

@@ -38,11 +38,13 @@ export function ProductGrid() {
 
   const updateParam = (params: any) => {
     navigate({
-      search: (prev: any) => ({
+      // Cast the whole function to 'any' to satisfy the Router's internal types
+      search: ((prev: any) => ({
         ...prev,
         ...params,
         page: params.page !== undefined ? params.page : 1,
-      }),
+      })) as any,
+      resetScroll: false,
     })
   }
 

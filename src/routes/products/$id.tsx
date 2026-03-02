@@ -58,6 +58,13 @@ export default function RouteComponent() {
     )
   }
 
+  // determine how many more items can actually be added/bought
+  const existingCartItem = cartItems.find((i) => i.product.id === product.id)
+  const existingQty = existingCartItem ? existingCartItem.quantity : 0
+  const allowedQty = Math.max(0, product.stock - existingQty)
+  const toAdd = Math.min(quantity, allowedQty)
+  const canAddOrBuy = allowedQty > 0
+
   const displayName =
     i18n.language === 'ar'
       ? (product as any).name_ar || product.name
@@ -69,16 +76,15 @@ export default function RouteComponent() {
       : (product as any).description_en || product.description
 
   const handleAddToCart = () => {
-    const existing = cartItems.find((i) => i.product.id === product.id)
-    const existingQty = existing ? existing.quantity : 0
-    const allowed = Math.max(0, product.stock - existingQty)
-    const toAdd = Math.min(quantity, allowed)
-    console.log(toAdd)
-    if (toAdd <= 0) {
+    if (!canAddOrBuy) {
       toast({ title: t('products.limitReached') || 'Limit Reached' })
       return
     }
+    // add the allowable amount, notify if we hit a cap
     for (let i = 0; i < toAdd; i++) addItem(product)
+    if (toAdd < quantity) {
+      toast({ title: t('products.limitReached') || 'Limit Reached' })
+    }
     setAdded(true)
     setTimeout(() => setAdded(false), 1500)
   }
@@ -257,7 +263,7 @@ export default function RouteComponent() {
             <div className="flex flex-col sm:flex-row gap-3 mb-8">
               <Button
                 size="lg"
-                disabled={product.stock === 0}
+                disabled={product.stock === 0 || !canAddOrBuy}
                 variant={added ? 'outline' : 'default'}
                 onClick={handleAddToCart}
                 className="w-full sm:w-40"
@@ -287,30 +293,39 @@ export default function RouteComponent() {
               </Button>
 
               <Button
-                disabled={product.stock === 0}
                 size="lg"
                 variant="default"
-                className="w-full sm:w-40 bg-green-600 hover:bg-green-700" // Fixed width
+                className="w-full sm:w-40 bg-green-600 hover:bg-green-700"
                 onClick={() => {
                   const existing = cartItems.find(
                     (i) => i.product.id === product.id,
                   )
                   const existingQty = existing ? existing.quantity : 0
+
+                  // 2. Calculate how many more the user is actually allowed to add
                   const allowed = Math.max(0, product.stock - existingQty)
+
+                  // 3. If they want 5 but only 2 are left, we only add 2
                   const toAdd = Math.min(quantity, allowed)
+
                   if (toAdd > 0) {
                     for (let i = 0; i < toAdd; i++) addItem(product)
+
+                    // If we added less than they requested because of stock limits
                     if (toAdd < quantity) {
                       toast({
                         title: t('products.limitReached') || 'Limit Reached',
+                        description: t('products.addedPartial').replace(
+                          '{{count}}',
+                          toAdd.toString(),
+                        ),
                       })
                     }
+                    // Navigate to checkout since items were added
+                    navigate({ to: '/checkout' })
                   } else {
-                    toast({
-                      title: t('products.limitReached') || 'Limit Reached',
-                    })
+                    navigate({ to: '/checkout' })
                   }
-                  navigate({ to: '/checkout' })
                 }}
               >
                 <ShoppingBag className="h-5 w-5 mr-2" />
