@@ -1,5 +1,4 @@
 import { useNavigate } from '@tanstack/react-router'
-
 import { motion } from 'framer-motion'
 import {
   ArrowLeft,
@@ -14,11 +13,13 @@ import {
   Plus,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton' // Added Skeleton import
 import { useCartStore } from '@/stores/cart-store'
 import { useWishlistStore } from '@/stores/wishlist-store'
 import { useTranslation } from 'react-i18next'
-import { products } from '@/lib/mock-data'
 import { useState } from 'react'
+import { useProduct } from '@/lib/api-hooks'
+import { products } from '@/lib/mock-data'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { createFileRoute } from '@tanstack/react-router'
@@ -26,6 +27,7 @@ import { createFileRoute } from '@tanstack/react-router'
 export const Route = createFileRoute('/products/$id')({
   component: RouteComponent,
 })
+
 export default function RouteComponent() {
   const { id } = Route.useParams()
 
@@ -40,7 +42,109 @@ export default function RouteComponent() {
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
 
-  const product = products.find((p) => p.id === id)
+  const { data: product, isLoading: productLoading } = useProduct(id)
+
+  if (productLoading) {
+    return (
+      <main className="flex-1">
+        {/* Back button skeleton */}
+        <div className="border-b bg-muted/40">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <Skeleton className="h-4 w-24" />
+          </div>
+        </div>
+
+        {/* Product Section Skeleton */}
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Info Skeleton */}
+            <div className="flex flex-col space-y-4">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-10 w-3/4" />
+
+              {/* Rating Skeleton */}
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Skeleton key={i} className="h-4 w-4 rounded-full" />
+                  ))}
+                </div>
+                <Skeleton className="h-4 w-20" />
+              </div>
+
+              {/* Description Skeletons */}
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-4/6" />
+              </div>
+
+              {/* Price Skeleton */}
+              <Skeleton className="h-8 w-32" />
+
+              {/* Stock Skeleton */}
+              <Skeleton className="h-4 w-24" />
+
+              {/* Quantity Skeleton */}
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-md" />
+                  <Skeleton className="h-10 w-20 rounded-md" />
+                  <Skeleton className="h-10 w-10 rounded-md" />
+                </div>
+              </div>
+
+              {/* Action Buttons Skeleton */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Skeleton className="h-11 w-full sm:w-40 rounded-md" />
+                <Skeleton className="h-11 w-full sm:w-48 rounded-md" />
+                <Skeleton className="h-11 w-full sm:w-40 rounded-md" />
+              </div>
+
+              {/* Features Skeletons */}
+              <div className="grid grid-cols-2 gap-4 border-t pt-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex gap-3">
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Skeleton */}
+            <div className="flex justify-center">
+              <Skeleton className="w-full max-w-lg aspect-square rounded-xl" />
+            </div>
+          </div>
+
+          {/* Related Products Skeleton */}
+          <div className="mt-20 border-t pt-12">
+            <Skeleton className="h-8 w-48 mb-8" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border bg-card overflow-hidden"
+                >
+                  <Skeleton className="aspect-square w-full" />
+                  <div className="p-4 space-y-2">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    )
+  }
 
   if (!product) {
     return (
@@ -284,7 +388,7 @@ export default function RouteComponent() {
                 size="lg"
                 variant="outline"
                 onClick={handleWishlist}
-                className={`w-full sm:w-48 ${isWishlisted ? 'text-destructive' : ''}`} // Fixed width
+                className={`w-full sm:w-48 ${isWishlisted ? 'text-destructive' : ''}`}
               >
                 <Heart className="h-5 w-5 mr-2" />
                 {isWishlisted
@@ -302,16 +406,12 @@ export default function RouteComponent() {
                   )
                   const existingQty = existing ? existing.quantity : 0
 
-                  // 2. Calculate how many more the user is actually allowed to add
                   const allowed = Math.max(0, product.stock - existingQty)
-
-                  // 3. If they want 5 but only 2 are left, we only add 2
                   const toAdd = Math.min(quantity, allowed)
 
                   if (toAdd > 0) {
                     for (let i = 0; i < toAdd; i++) addItem(product)
 
-                    // If we added less than they requested because of stock limits
                     if (toAdd < quantity) {
                       toast({
                         title: t('products.limitReached') || 'Limit Reached',
@@ -321,7 +421,6 @@ export default function RouteComponent() {
                         ),
                       })
                     }
-                    // Navigate to checkout since items were added
                     navigate({ to: '/checkout' })
                   } else {
                     navigate({ to: '/checkout' })

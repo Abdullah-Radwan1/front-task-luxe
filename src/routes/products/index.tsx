@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useSearchParams } from '@/lib/useSearchParams'
 import { useTranslation } from 'react-i18next'
@@ -28,7 +27,7 @@ import { Separator } from '@/components/ui/separator'
 import { ProductCard } from '@/components/ProductCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { TablePagination } from '@/components/TablePagination'
-import { api } from '@/lib/mock-data'
+import { useProducts } from '@/lib/api-hooks'
 import { useAuthStore } from '@/stores/auth-store'
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -206,7 +205,7 @@ export default function ProductsPage() {
     }
   }, [user, navigate])
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const [searchInput, setSearchInput] = useState(
     searchParams.get('search') || '',
   )
@@ -247,41 +246,39 @@ export default function ProductsPage() {
   }
 
   // Fetch all products then filter client-side for sidebar filters
-  const { data, isLoading } = useQuery({
-    queryKey: [
-      'products-page',
-      sort,
-      page,
-      search,
-      activeCategories.join(','),
-      minPrice,
-      maxPrice,
-      inStock,
-    ],
-    queryFn: async () => {
-      const result = await api.getProducts({ search, sort, pageSize: 100 })
-      let filtered = result.products
-
-      if (activeCategories.length > 0) {
-        filtered = filtered.filter((p) => activeCategories.includes(p.category))
-      }
-      if (minPrice > 0) filtered = filtered.filter((p) => p.price >= minPrice)
-      if (maxPrice < MAX_PRICE)
-        filtered = filtered.filter((p) => p.price <= maxPrice)
-      if (inStock) filtered = filtered.filter((p) => p.stock > 0)
-
-      const pageSize = 6
-      const total = filtered.length
-      const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
-
-      return {
-        products: paginated,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-        page,
-      }
-    },
+  const { data, isLoading } = useProducts({
+    search,
+    sort,
+    page,
+    pageSize: 100,
   })
+
+  // apply client-side filters, since hook only knows about initial fetch
+  let filteredProducts = data?.products || []
+  if (activeCategories.length > 0) {
+    filteredProducts = filteredProducts.filter((p) =>
+      activeCategories.includes(p.category),
+    )
+  }
+  if (minPrice > 0)
+    filteredProducts = filteredProducts.filter((p) => p.price >= minPrice)
+  if (maxPrice < MAX_PRICE)
+    filteredProducts = filteredProducts.filter((p) => p.price <= maxPrice)
+  if (inStock) filteredProducts = filteredProducts.filter((p) => p.stock > 0)
+
+  const pageSize = 6
+  const total = filteredProducts.length
+  const paginated = filteredProducts.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  )
+
+  const dataWithPagination = {
+    products: paginated,
+    total,
+    totalPages: Math.ceil(total / pageSize),
+    page,
+  }
 
   return (
     <main className="flex-1 justify-center  mx-auto container p-2">
@@ -352,21 +349,21 @@ export default function ProductsPage() {
                 <SkeletonCard key={i} />
               ))}
             </div>
-          ) : data?.products.length === 0 ? (
+          ) : dataWithPagination.products.length === 0 ? (
             <p className="text-center text-muted-foreground py-12">
               {t('products.noResults')}
             </p>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {data?.products.map((product, i) => (
+                {dataWithPagination.products.map((product, i) => (
                   <ProductCard key={product.id} product={product} index={i} />
                 ))}
               </div>
-              {data && data.totalPages > 1 && (
+              {dataWithPagination.totalPages > 1 && (
                 <TablePagination
-                  page={data.page}
-                  totalPages={data.totalPages}
+                  page={dataWithPagination.page}
+                  totalPages={dataWithPagination.totalPages}
                   onPageChange={(p) => updateParam('page', String(p))}
                 />
               )}

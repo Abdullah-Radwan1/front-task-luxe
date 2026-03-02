@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Lock, ArrowRight, AlertCircle } from 'lucide-react'
-import { api } from '@/lib/mock-data'
+import { useCreateOrder } from '@/lib/api-hooks'
 
 export const Route = createFileRoute('/checkout')({
   beforeLoad: () => {
@@ -34,8 +34,8 @@ function Checkout() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const { items, totalPrice, clearCart } = useCartStore()
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const createOrderMutation = useCreateOrder()
 
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
@@ -85,32 +85,32 @@ function Checkout() {
 
     if (!validateForm()) return
 
-    setIsLoading(true)
-    try {
-      const cartItemsForOrder = items.map((item) => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-        price: item.product.price,
-      }))
+    const cartItemsForOrder = items.map((item) => ({
+      productId: item.product.id,
+      quantity: item.quantity,
+      price: item.product.price,
+    }))
 
-      const order = await api.createOrder(
-        formData.fullName,
-        formData.email,
-        cartItemsForOrder,
-        totalPrice(),
-      )
-
-      clearCart()
-      // 3. Updated navigation to use params object
-      navigate({
-        to: '/orderSuccess',
-        params: { orderId: order.id },
-      })
-    } catch (err) {
-      setError(t('checkout.orderFailed'))
-    } finally {
-      setIsLoading(false)
-    }
+    createOrderMutation.mutate(
+      {
+        customerName: formData.fullName,
+        email: formData.email,
+        cartItems: cartItemsForOrder,
+        total: totalPrice(),
+      },
+      {
+        onSuccess: (order) => {
+          clearCart()
+          navigate({
+            to: '/orderSuccess',
+            params: { orderId: order.id },
+          })
+        },
+        onError: () => {
+          setError(t('checkout.orderFailed'))
+        },
+      },
+    )
   }
 
   return (
@@ -121,7 +121,7 @@ function Checkout() {
         className="max-w-6xl mx-auto"
       >
         <div className="mb-12">
-          <h1 className="font-display text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="font-display text-5xl font-bold mb-2 bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
             {t('checkout.title')}
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -138,12 +138,12 @@ function Checkout() {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex items-center gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400"
                 >
-                  <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                  <AlertCircle className="h-5 w-5 shrink-0" />
                   <span>{error}</span>
                 </motion.div>
               )}
 
-              <Card className="bg-gradient-to-br from-card to-muted/30">
+              <Card className="bg-linear-to-br from-card to-muted/30">
                 <CardHeader>
                   <CardTitle>{t('checkout.customerInfo')}</CardTitle>
                 </CardHeader>
@@ -208,7 +208,7 @@ function Checkout() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-card to-muted/30">
+              <Card className="bg-linear-to-br from-card to-muted/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lock className="h-5 w-5 text-primary" />
@@ -260,10 +260,10 @@ function Checkout() {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={createOrderMutation.status === 'pending'}
                 className="w-full h-12 text-lg gap-2"
               >
-                {isLoading ? (
+                {createOrderMutation.status === 'pending' ? (
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
@@ -276,7 +276,7 @@ function Checkout() {
           </div>
 
           <div className="space-y-6">
-            <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 sticky top-24">
+            <Card className="bg-linear-to-br from-primary/5 to-accent/5 border-primary/20 sticky top-24">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShoppingBag className="h-5 w-5" />

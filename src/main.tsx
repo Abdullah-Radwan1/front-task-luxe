@@ -3,10 +3,12 @@ import '@/lib/i18n'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import './styles.css'
+import NotFound from './routes/notFound'
 const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   scrollRestoration: true,
+  defaultNotFoundComponent: NotFound, // Use this for a simple global fix
 })
 
 declare module '@tanstack/react-router' {

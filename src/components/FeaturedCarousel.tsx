@@ -1,8 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useNavigate } from '@tanstack/react-router'
-import { api } from '@/lib/mock-data'
+import { useFeaturedProducts } from '@/lib/api-hooks'
 import { Sparkles, ArrowRight, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -10,10 +9,7 @@ export function FeaturedCarousel() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['featured'],
-    queryFn: api.getFeaturedProducts,
-  })
+  const { data, isLoading } = useFeaturedProducts()
 
   const featuredProducts = data?.slice(0, 3)
 

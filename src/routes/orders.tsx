@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { motion } from 'framer-motion'
 import { ShoppingBag, ArrowRight, Package } from 'lucide-react'
 import { orders } from '@/lib/mock-data'
-import { Header } from '@/components/layout/Header' // Ensure this is imported
 
 export const Route = createFileRoute('/orders')({
   beforeLoad: () => {
@@ -62,7 +61,7 @@ function Orders() {
               className="flex items-start justify-between gap-4 flex-wrap"
             >
               <div>
-                <h1 className="font-display text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <h1 className="font-display text-5xl font-bold mb-2 bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
                   {t('orders.title')}
                 </h1>
                 <p className="text-muted-foreground text-lg">
@@ -73,7 +72,7 @@ function Orders() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="h-20 w-20 rounded-full bg-gradient-to-r from-primary to-accent/50 flex items-center justify-center flex-shrink-0"
+                className="h-20 w-20 rounded-full bg-linear-to-r from-primary to-accent/50 flex items-center justify-center shrink-0"
               >
                 <ShoppingBag className="h-10 w-10 text-white" />
               </motion.div>
@@ -118,7 +117,7 @@ function Orders() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-card to-muted/20">
+                  <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-linear-to-r from-card to-muted/20">
                     <CardContent className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
                         {/* Order ID & Date */}
@@ -224,7 +223,7 @@ function Orders() {
                 transition={{ delay: 0.2 }}
                 className="mt-8 pt-8 border-t border-border/50"
               >
-                <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+                <Card className="bg-linear-to-br from-primary/5 to-accent/5 border-primary/20">
                   <CardContent className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <p className="text-sm text-muted-foreground font-semibold mb-1">

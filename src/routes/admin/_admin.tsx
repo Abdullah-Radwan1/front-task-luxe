@@ -19,8 +19,19 @@ import {
   Globe,
   Menu,
   X,
+  AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useAuthStore } from '@/stores/auth-store'
 import { useTheme } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
@@ -54,6 +65,7 @@ export function AdminLayout() {
   const logout = useAuthStore((s) => s.logout)
   const { theme, toggle } = useTheme()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false)
 
   const switchLang = () => {
     const next = i18n.language === 'en' ? 'ar' : 'en'
@@ -63,6 +75,12 @@ export function AdminLayout() {
   }
 
   const closeMobileMenu = () => setIsMobileOpen(false)
+
+  const handleLogout = () => {
+    logout()
+    navigate({ to: '/' })
+    setShowLogoutDialog(false)
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
@@ -162,10 +180,7 @@ export function AdminLayout() {
             variant="ghost"
             size="sm"
             className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={() => {
-              logout()
-              navigate({ to: '/' })
-            }}
+            onClick={() => setShowLogoutDialog(true)}
           >
             <LogOut className="h-4 w-4" /> {t('nav.logout')}
           </Button>
@@ -176,6 +191,35 @@ export function AdminLayout() {
       <main className="flex-1 p-6 md:p-8 overflow-auto">
         <Outlet />
       </main>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <div className="p-2 bg-destructive/10 rounded-full">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
+              </div>
+              <span>{t('admin.logoutConfirmTitle') || 'Confirm Logout'}</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('admin.logoutConfirmMessage') ||
+                'Are you sure you want to log out? You will need to log in again to access the admin area.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t('admin.cancel') || 'Cancel'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {t('admin.logout') || 'Logout'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

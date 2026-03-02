@@ -103,35 +103,34 @@ export default function AdminLogin() {
   )
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-accent/5">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-brfrom-background via-background to-accent/5">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-4">
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={switchLang}
-            className="rounded-full"
-          >
-            <Globe className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggle}
-            className="rounded-full"
-          >
-            {theme === 'light' ? (
-              <Moon className="h-4 w-4" />
-            ) : (
-              <Sun className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
+      {/* Top controls */}
+      <div className="absolute top-0 left-0 right-0 flex justify-end gap-2 p-4 z-10">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={switchLang}
+          className="rounded-full hover:bg-accent/10"
+        >
+          <Globe className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggle}
+          className="rounded-full hover:bg-accent/10"
+        >
+          {theme === 'light' ? (
+            <Moon className="h-4 w-4" />
+          ) : (
+            <Sun className="h-4 w-4" />
+          )}
+        </Button>
       </div>
 
       <motion.div
@@ -142,10 +141,10 @@ export default function AdminLogin() {
         <div className="absolute -top-3 -left-3 w-12 h-12 border-t-2 border-l-2 border-accent/30 rounded-tl-lg" />
         <div className="absolute -bottom-3 -right-3 w-12 h-12 border-b-2 border-r-2 border-accent/30 rounded-br-lg" />
 
-        <Card className="border-2 shadow-xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <Card className="border-2 shadow-xl bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
           <CardHeader className="text-center space-y-4 pb-8">
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }}>
-              <p className="font-display text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <p className="font-display text-4xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
                 LUXE
               </p>
               <div className="w-16 h-1 bg-accent/30 mx-auto mt-4 rounded-full" />
@@ -154,9 +153,7 @@ export default function AdminLogin() {
               <CardTitle className="text-2xl font-display">
                 {t('admin.welcomeBack')}
               </CardTitle>
-              <CardDescription>
-                Enter your credentials to access the admin panel
-              </CardDescription>
+              <CardDescription>{t('admin.intro')}</CardDescription>
             </div>
           </CardHeader>
 
@@ -190,7 +187,7 @@ export default function AdminLogin() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent text-accent-foreground font-medium py-5 shadow-lg hover:shadow-xl disabled:opacity-70"
+                className="w-full bg-linear-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent text-accent-foreground font-medium py-5 shadow-lg hover:shadow-xl disabled:opacity-70"
               >
                 {isLoading ? (
                   <motion.div

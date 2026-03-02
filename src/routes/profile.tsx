@@ -51,7 +51,7 @@ export default function Profile() {
             className="flex items-start justify-between gap-4"
           >
             <div>
-              <h1 className="font-display text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h1 className="font-display text-5xl font-bold mb-2 bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
                 {t('profile.welcome')}, {user.name}!
               </h1>
               <p className="text-muted-foreground text-lg">
@@ -62,7 +62,7 @@ export default function Profile() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="h-20 w-20 rounded-full bg-gradient-to-r from-primary to-accent/50 flex items-center justify-center flex-shrink-0"
+              className="h-20 w-20 rounded-full bg-linear-to-r from-primary to-accent/50 flex items-center justify-center shrink-0"
             >
               <User className="h-10 w-10 text-white" />
             </motion.div>
@@ -76,7 +76,7 @@ export default function Profile() {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2"
           >
-            <Card className="h-full bg-gradient-to-br from-card to-muted/30">
+            <Card className="h-full bg-linear-to-br from-card to-muted/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <User className="h-5 w-5 text-primary" />
@@ -109,7 +109,7 @@ export default function Profile() {
           >
             <div className="grid grid-cols-2 gap-4 h-full">
               {/* Total Orders */}
-              <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-lg p-6 flex flex-col justify-center">
+              <div className="bg-linear-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-lg p-6 flex flex-col justify-center">
                 <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-2">
                   {t('profile.totalOrders')}
                 </p>
@@ -118,7 +118,7 @@ export default function Profile() {
                 </p>
               </div>
               {/* Total Spent */}
-              <div className="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-lg p-6 flex flex-col justify-center">
+              <div className="bg-linear-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-lg p-6 flex flex-col justify-center">
                 <p className="text-sm font-semibold text-accent uppercase tracking-wide mb-2">
                   {t('profile.totalSpent')}
                 </p>

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,82 +16,31 @@ import {
 } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/auth-store'
 import { useTheme } from '@/components/ThemeProvider'
-import { Sun, Moon, Globe, Mail, Lock, UserPlus, XCircle } from 'lucide-react'
+import {
+  Sun,
+  Moon,
+  Globe,
+  Mail,
+  Lock,
+  UserPlus,
+  AlertCircle,
+  Loader2,
+  User,
+  CheckCircle2,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 
-// Zod Schema
-const schema = z
-  .object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.string().email('Invalid email address'),
-    password: z
-      .string()
-      .min(6, 'Password must be at least 6 characters')
-      .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
-      .regex(/[0-9]/, 'Must contain at least one number'),
-    confirm: z.string(),
-  })
-  .refine((data) => data.password === data.confirm, {
-    message: 'Passwords do not match',
-    path: ['confirm'],
-  })
-
-type FormData = z.infer<typeof schema>
+type FormData = {
+  name: string
+  email: string
+  password: string
+  confirm: string
+}
 
 export const Route = createFileRoute('/register')({
   component: Register,
 })
-
-const InputField = ({
-  id,
-  type,
-  icon: Icon,
-  placeholder,
-  error,
-  register,
-  t,
-}: {
-  id: string
-  type: string
-  icon: any
-  placeholder: string
-  error?: any
-  register: any
-  t: any
-}) => (
-  <div className="space-y-1">
-    <Label htmlFor={id} className="text-sm font-medium">
-      {t(`user.${id}`)}
-    </Label>
-    <div className="relative">
-      <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-      <Input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        {...register(id)}
-        className={cn(
-          'pl-10 py-3 rounded-lg border w-full transition-all focus:ring-2 focus:ring-accent focus:border-accent',
-          error && 'border-destructive focus:ring-destructive',
-        )}
-        aria-invalid={!!error}
-        aria-errormessage={error ? `${id}-error` : undefined}
-      />
-    </div>
-    {error?.message && (
-      <motion.p
-        initial={{ opacity: 0, y: -5 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-xs text-destructive flex items-center gap-1 mt-1"
-        id={`${id}-error`}
-        role="alert"
-      >
-        <XCircle className="h-3 w-3" /> {error.message}
-      </motion.p>
-    )}
-  </div>
-)
 
 export default function Register() {
   const { t, i18n } = useTranslation()
@@ -101,7 +48,7 @@ export default function Register() {
   const registerUser = useAuthStore((s) => s.register)
   const user = useAuthStore((s) => s.user)
   const { theme, toggle } = useTheme()
-  const [error, setError] = useState('')
+  const [serverError, setServerError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const {
@@ -110,11 +57,11 @@ export default function Register() {
     watch,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    mode: 'onChange', // Changed from 'onTouched' to 'onChange'
+    mode: 'onChange',
   })
 
   const passwordValue = watch('password', '')
+  const isRtl = i18n.language === 'ar'
 
   useEffect(() => {
     if (user) navigate({ to: user.role === 'admin' ? '/admin' : '/' })
@@ -122,33 +69,39 @@ export default function Register() {
 
   const onSubmit = (data: FormData) => {
     setIsLoading(true)
-    setError('')
+    setServerError('')
+
     setTimeout(() => {
       const ok = registerUser(data.name, data.email, data.password)
-      if (!ok) setError(t('user.emailInUse'))
-      else navigate({ to: '/' })
-      setIsLoading(false)
-    }, 500)
-  }
-
-  const onInvalid = (errors: any) => {
-    console.log('Validation errors:', errors)
+      if (!ok) {
+        setServerError(t('user.emailInUse'))
+        setIsLoading(false)
+      } else {
+        navigate({ to: '/' })
+      }
+    }, 800)
   }
 
   const switchLang = () => {
     const next = i18n.language === 'en' ? 'ar' : 'en'
     i18n.changeLanguage(next)
     document.documentElement.dir = next === 'ar' ? 'rtl' : 'ltr'
+    document.documentElement.lang = next
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-accent/10 relative">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-      </div>
+  // Password Strength Helpers
+  const hasMinLength = passwordValue.length >= 6
+  const hasUppercase = /[A-Z]/.test(passwordValue)
+  const hasNumber = /[0-9]/.test(passwordValue)
 
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-background via-background to-accent/5 relative overflow-hidden">
+      {/* Decorative Background */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Top controls */}
+      <div className="absolute top-0 left-0 right-0 flex justify-end gap-2 p-4 z-10">
         <Button
           variant="ghost"
           size="icon"
@@ -174,124 +127,285 @@ export default function Register() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md z-10"
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-110 z-10"
       >
-        <Card className="border-2 shadow-2xl bg-background/95 backdrop-blur-lg rounded-2xl overflow-hidden">
-          <CardHeader className="text-center space-y-2 pb-6">
-            <p className="font-display text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              LUXE
-            </p>
-            <CardTitle className="text-2xl font-semibold">
+        <Card className="border shadow-2xl bg-background/80 backdrop-blur-xl rounded-3xl overflow-hidden">
+          <CardHeader className="text-center space-y-1 pb-6 pt-8">
+            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+              <UserPlus className="h-6 w-6 text-primary" />
+            </div>
+            <CardTitle className="text-3xl font-bold tracking-tight">
               {t('user.register')}
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              {t('user.createAccount')}
-            </CardDescription>
+            <CardDescription>{t('user.createAccount')}</CardDescription>
           </CardHeader>
 
           <CardContent>
             <form
-              onSubmit={handleSubmit(onSubmit, onInvalid)}
+              onSubmit={handleSubmit(onSubmit)}
               noValidate
-              className="space-y-5"
+              className="space-y-4"
             >
-              <InputField
-                id="name"
-                type="text"
-                icon={UserPlus}
-                placeholder="Full Name"
-                error={errors.name}
-                register={register}
-                t={t}
-              />
-              <InputField
-                id="email"
-                type="email"
-                icon={Mail}
-                placeholder="name@example.com"
-                error={errors.email}
-                register={register}
-                t={t}
-              />
-
-              <div className="space-y-2">
-                <InputField
-                  id="password"
-                  type="password"
-                  icon={Lock}
-                  placeholder="••••••••"
-                  error={errors.password}
-                  register={register}
-                  t={t}
-                />
-                <div className="grid grid-cols-3 gap-2 px-1">
-                  <div
+              {/* Full Name */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+                  {t('user.name')}
+                </Label>
+                <div className="relative group">
+                  <User
                     className={cn(
-                      'h-1 rounded-full transition-colors',
-                      passwordValue.length >= 6 ? 'bg-green-500' : 'bg-muted',
+                      'absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary',
+                      isRtl ? 'right-3' : 'left-3',
                     )}
                   />
-                  <div
+                  <Input
+                    {...register('name', {
+                      required: t('user.nameRequired') || 'Name is required',
+                    })}
+                    placeholder="John Doe"
                     className={cn(
-                      'h-1 rounded-full transition-colors',
-                      /[A-Z]/.test(passwordValue) ? 'bg-green-500' : 'bg-muted',
-                    )}
-                  />
-                  <div
-                    className={cn(
-                      'h-1 rounded-full transition-colors',
-                      /[0-9]/.test(passwordValue) ? 'bg-green-500' : 'bg-muted',
+                      'h-11 bg-background/50 border-accent/10 transition-all',
+                      isRtl ? 'pr-10' : 'pl-10',
+                      errors.name && 'border-destructive',
                     )}
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground flex justify-between px-1">
-                  <span>6+ Chars</span>
-                  <span>1 Uppercase</span>
-                  <span>1 Number</span>
-                </p>
+                <AnimatePresence mode="wait">
+                  {errors.name && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-[11px] text-destructive flex items-center gap-1 px-1 overflow-hidden font-medium pt-1"
+                    >
+                      <AlertCircle size={12} /> {errors.name.message}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <InputField
-                id="confirm"
-                type="password"
-                icon={Lock}
-                placeholder="••••••••"
-                error={errors.confirm}
-                register={register}
-                t={t}
-              />
-
-              {error && (
-                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg border border-destructive/20">
-                  {error}
+              {/* Email */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+                  {t('user.email')}
+                </Label>
+                <div className="relative group">
+                  <Mail
+                    className={cn(
+                      'absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary',
+                      isRtl ? 'right-3' : 'left-3',
+                    )}
+                  />
+                  <Input
+                    {...register('email', {
+                      required: t('user.emailRequired') || 'Email is required',
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: t('user.invalidEmail') || 'Invalid email',
+                      },
+                    })}
+                    type="email"
+                    placeholder="name@example.com"
+                    className={cn(
+                      'h-11 bg-background/50 border-accent/10 transition-all',
+                      isRtl ? 'pr-10' : 'pl-10',
+                      errors.email && 'border-destructive',
+                    )}
+                  />
                 </div>
-              )}
+                <AnimatePresence mode="wait">
+                  {errors.email && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-[11px] text-destructive flex items-center gap-1 px-1 overflow-hidden font-medium pt-1"
+                    >
+                      <AlertCircle size={12} /> {errors.email.message}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+                  {t('user.password')}
+                </Label>
+                <div className="relative group">
+                  <Lock
+                    className={cn(
+                      'absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary',
+                      isRtl ? 'right-3' : 'left-3',
+                    )}
+                  />
+                  <Input
+                    {...register('password', {
+                      required:
+                        t('user.passwordRequired') || 'Password is required',
+                      minLength: {
+                        value: 6,
+                        message:
+                          t('user.passwordTooShort') || 'Min 6 characters',
+                      },
+                      validate: {
+                        hasUpper: (v) =>
+                          /[A-Z]/.test(v) ||
+                          t('user.needUpper') ||
+                          'Need 1 uppercase',
+                        hasNum: (v) =>
+                          /[0-9]/.test(v) ||
+                          t('user.needNum') ||
+                          'Need 1 number',
+                      },
+                    })}
+                    type="password"
+                    placeholder="••••••••"
+                    className={cn(
+                      'h-11 bg-background/50 border-accent/10 transition-all',
+                      isRtl ? 'pr-10' : 'pl-10',
+                      errors.password && 'border-destructive',
+                    )}
+                  />
+                </div>
+
+                {/* Strength Meter */}
+                <div className="pt-1 px-1">
+                  <div className="flex gap-1.5 h-1">
+                    <div
+                      className={cn(
+                        'flex-1 rounded-full transition-colors',
+                        hasMinLength ? 'bg-green-500' : 'bg-muted',
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        'flex-1 rounded-full transition-colors',
+                        hasUppercase ? 'bg-green-500' : 'bg-muted',
+                      )}
+                    />
+                    <div
+                      className={cn(
+                        'flex-1 rounded-full transition-colors',
+                        hasNumber ? 'bg-green-500' : 'bg-muted',
+                      )}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[9px] mt-1 font-bold text-muted-foreground uppercase tracking-tighter">
+                    <span className={cn(hasMinLength && 'text-green-600')}>
+                      6+ Chars
+                    </span>
+                    <span className={cn(hasUppercase && 'text-green-600')}>
+                      Uppercase
+                    </span>
+                    <span className={cn(hasNumber && 'text-green-600')}>
+                      Number
+                    </span>
+                  </div>
+                </div>
+                <AnimatePresence mode="wait">
+                  {errors.password && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-[11px] text-destructive flex items-center gap-1 px-1 overflow-hidden font-medium pt-1"
+                    >
+                      <AlertCircle size={12} /> {errors.password.message}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground px-1">
+                  {t('user.confirmPassword')}
+                </Label>
+                <div className="relative group">
+                  <CheckCircle2
+                    className={cn(
+                      'absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary',
+                      isRtl ? 'right-3' : 'left-3',
+                    )}
+                  />
+                  <Input
+                    {...register('confirm', {
+                      required:
+                        t('user.confirmRequired') || 'Confirm your password',
+                      validate: (val) =>
+                        val === passwordValue ||
+                        t('user.passwordsDoNotMatch') ||
+                        'Passwords do not match',
+                    })}
+                    type="password"
+                    placeholder="••••••••"
+                    className={cn(
+                      'h-11 bg-background/50 border-accent/10 transition-all',
+                      isRtl ? 'pr-10' : 'pl-10',
+                      errors.confirm && 'border-destructive',
+                    )}
+                  />
+                </div>
+                <AnimatePresence mode="wait">
+                  {errors.confirm && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-[11px] text-destructive flex items-center gap-1 px-1 overflow-hidden font-medium pt-1"
+                    >
+                      <AlertCircle size={12} /> {errors.confirm.message}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Server Error Message */}
+              <AnimatePresence>
+                {serverError && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="bg-destructive/10 text-destructive text-[11px] p-2.5 rounded-lg border border-destructive/20 flex items-center gap-2 overflow-hidden"
+                  >
+                    <AlertCircle size={14} /> {serverError}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent text-accent-foreground font-semibold py-4 rounded-lg shadow-lg flex items-center justify-center gap-2"
+                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70"
               >
                 {isLoading ? (
-                  <XCircle className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <UserPlus className="h-4 w-4" />
+                  t('user.createAccount')
                 )}
-                {isLoading ? t('user.creating') : t('user.createAccount')}
               </Button>
             </form>
           </CardContent>
 
-          <CardFooter className="flex flex-col gap-2 pt-4 border-t text-center">
-            <p className="text-xs text-muted-foreground">
+          <CardFooter className="flex flex-col gap-3 pb-8 pt-4 border-t bg-muted/20">
+            <p className="text-sm text-muted-foreground text-center">
               {t('user.haveAccount')}{' '}
               <Link
                 to="/login"
-                className="text-accent font-semibold hover:underline"
+                className="text-primary font-bold hover:underline"
               >
                 {t('user.login')}
               </Link>
             </p>
+            <Link
+              to="/admin/login"
+              className="text-[10px] uppercase font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            >
+              {t('user.adminLogin')} <Lock size={10} />
+            </Link>
           </CardFooter>
         </Card>
       </motion.div>
