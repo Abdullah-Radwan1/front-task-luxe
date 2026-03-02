@@ -111,10 +111,20 @@ const resources = {
       },
 
       hero: {
-        title: 'Timeless Elegance',
-        subtitle: 'Curated luxury essentials for the modern connoisseur',
+        title: 'Elevate Your Style',
+        subtitle:
+          'Discover our curated collection of luxury timepieces and accessories',
         cta: 'Explore Collection',
         secondary: 'New Arrivals',
+        newCollection: 'New Collection',
+        premiumQuality: 'Premium Quality',
+        securePayment: 'Secure Payment',
+        freeShipping: 'Free Shipping',
+        happyCustomers: 'Happy Customers',
+        premiumProducts: 'Premium Products',
+        customerSupport: 'Customer Support',
+        scroll: 'Scroll',
+        imageAlt: 'Luxury collection',
       },
       products: {
         title: 'Our Collection',
@@ -395,10 +405,19 @@ const resources = {
       },
 
       hero: {
-        title: 'أناقة خالدة',
-        subtitle: 'مجموعة فاخرة مختارة للذواقة العصري',
+        title: 'ارتقِ بأناقتك',
+        subtitle: 'اكتشف مجموعتنا المختارة من الساعات الفاخرة والإكسسوارات',
         cta: 'استكشف المجموعة',
         secondary: 'وصل حديثاً',
+        newCollection: 'مجموعة جديدة',
+        premiumQuality: 'جودة عالية',
+        securePayment: 'دفع آمن',
+        freeShipping: 'شحن مجاني',
+        happyCustomers: 'عملاء سعداء',
+        premiumProducts: 'منتجات فاخرة',
+        customerSupport: 'دعم 24/7',
+        scroll: 'مرر للأسفل',
+        imageAlt: 'مجموعة فاخرة',
       },
       products: {
         title: 'مجموعتنا',
