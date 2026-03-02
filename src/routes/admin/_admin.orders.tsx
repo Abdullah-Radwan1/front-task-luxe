@@ -17,7 +17,7 @@ import {
   Download,
   Sparkles,
 } from 'lucide-react'
-import { useOrders } from '@/lib/api-hooks'
+import { useOrders } from '#/lib/api-hooks/orders'
 
 import {
   Table,

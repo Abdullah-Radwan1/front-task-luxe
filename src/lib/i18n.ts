@@ -19,6 +19,10 @@ const resources = {
         my_account: 'My Account',
         backToHome: 'back to home',
         profile: 'profile',
+        logoutConfirmTitle: 'Confirm Logout',
+        logoutConfirmMessage:
+          'Are you sure you want to log out? You will need to sign in again to access your account.',
+        cancel: 'Cancel',
       },
       // English (en.json)
       user: {
@@ -248,6 +252,7 @@ const resources = {
         expiry: 'Expiration Date',
         cvv: 'CVV',
         placeOrder: 'Place Order',
+        shippingAddress: 'shipping Address',
         processing: 'Processing...',
         summary: 'Order Summary',
         quantity: 'Qty',
@@ -295,6 +300,19 @@ const resources = {
         en: 'English',
         ar: 'العربية',
       },
+      footer: {
+        tagline: 'Timeless elegance for the modern connoisseur',
+        shop: 'Shop',
+        products: 'Products',
+        collections: 'Collections',
+        newArrivals: 'New Arrivals',
+        support: 'Support',
+        contact: 'Contact Us',
+        faq: 'FAQ',
+        shipping: 'Shipping',
+        connect: 'Connect',
+        rights: 'All rights reserved.',
+      },
     },
   },
   ar: {
@@ -314,6 +332,10 @@ const resources = {
         logout: 'تسجيل خروج',
         my_account: 'حسابي', // Added missing key
         backToHome: 'الرجوع للصفحة الرئيسية',
+        logoutConfirmTitle: 'تأكيد تسجيل الخروج',
+        logoutConfirmMessage:
+          'هل أنت متأكد من رغبتك في تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك.',
+        cancel: 'إلغاء',
       },
       // Arabic (ar.json)
       user: {
@@ -548,6 +570,7 @@ const resources = {
         shipping: 'الشحن',
         taxes: 'الضرائب (10%)',
         total: 'السعر الإجمالي',
+        shippingAddress: 'عنوان الشحن',
         free: 'مجاني',
         secure: 'دفع آمن بواسطة Stripe',
         continueShopping: 'متابعة التسوق',
@@ -579,6 +602,19 @@ const resources = {
         supportEmail: 'هل تحتاج مساعدة؟',
         returnPolicy: 'سياسة الإرجاع',
         view: 'عرض السياسة',
+      },
+      footer: {
+        tagline: 'أناقة خالدة للخبير العصري',
+        shop: 'تسوق',
+        products: 'المنتجات',
+        collections: 'المجموعات',
+        newArrivals: 'وصل حديثاً',
+        support: 'الدعم',
+        contact: 'اتصل بنا',
+        faq: 'الأسئلة الشائعة',
+        shipping: 'الشحن',
+        connect: 'تواصل',
+        rights: 'جميع الحقوق محفوظة.',
       },
       light: 'فاتح', // Changed from theme.light to match English structure
       dark: 'داكن', // Changed from theme.dark to match English structure

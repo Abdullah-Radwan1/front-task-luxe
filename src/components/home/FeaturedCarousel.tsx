@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useNavigate } from '@tanstack/react-router'
-import { useFeaturedProducts } from '@/lib/api-hooks'
+import { useFeaturedProducts } from '#/lib/api-hooks/products'
 import { Sparkles, ArrowRight, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -51,7 +51,7 @@ export function FeaturedCarousel() {
           >
             {t('featured.titlePrefix')}{' '}
             <span className="relative inline-block">
-              <span className="relative z-10 bg-gradient-to-r from-accent to-accent/70 bg-clip-text text-transparent">
+              <span className="relative z-10 bg-linear-to-r from-accent to-accent/70 bg-clip-text text-transparent">
                 {t('featured.titleHighlight')}
               </span>
               <span className="absolute -bottom-2 left-0 right-0 h-3 bg-accent/20 rounded-full blur-xl" />
@@ -74,7 +74,7 @@ export function FeaturedCarousel() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 w-full mx-auto">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-[4/5] bg-muted rounded-2xl" />
+                <div className="aspect-4/5 bg-muted rounded-2xl" />
                 <div className="mt-6 space-y-3 text-center">
                   <div className="h-6 bg-muted rounded w-3/4 mx-auto" />
                   <div className="h-4 bg-muted rounded w-1/2 mx-auto" />
@@ -111,7 +111,7 @@ export function FeaturedCarousel() {
               >
                 <div className="relative bg-card border border-border/50 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 hover:border-accent/30">
                   {/* Image Container */}
-                  <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                  <div className="relative aspect-4/5 overflow-hidden bg-muted">
                     <img
                       src={product.image}
                       alt={
@@ -144,7 +144,7 @@ export function FeaturedCarousel() {
                     </div>
 
                     {/* Quick View Overlay */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/50 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-linear-to-t from-black/50 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                       <span className="text-white text-sm font-medium">
                         {t('featured.quickView')}
                       </span>
@@ -177,7 +177,7 @@ export function FeaturedCarousel() {
                 </div>
 
                 {/* Background Number */}
-                <span className="absolute -top-8 -right-4 text-[120px] lg:text-[150px] font-display font-black text-primary/[0.03] select-none pointer-events-none group-hover:text-accent/10 transition-colors">
+                <span className="absolute -top-8 -right-4 text-[120px] lg:text-[150px] font-display font-black text-primary/3 select-none pointer-events-none group-hover:text-accent/10 transition-colors">
                   0{index + 1}
                 </span>
               </motion.div>

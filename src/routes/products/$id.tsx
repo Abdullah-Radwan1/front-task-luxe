@@ -18,7 +18,7 @@ import { useCartStore } from '@/stores/cart-store'
 import { useWishlistStore } from '@/stores/wishlist-store'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-import { useProduct } from '@/lib/api-hooks'
+import { useProduct } from '#/lib/api-hooks/products'
 import { products } from '@/lib/mock-data'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
@@ -304,7 +304,7 @@ export default function RouteComponent() {
                     <Minus className="h-4 w-4" />
                   </Button>
 
-                  <div className="relative flex-1 max-w-[100px]">
+                  <div className="relative flex-1 max-w-25">
                     <Input
                       type="number"
                       value={quantity}

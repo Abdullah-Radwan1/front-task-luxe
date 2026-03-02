@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select'
 import { ProductCard } from '@/components/ProductCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { useProducts } from '@/lib/api-hooks'
+import { useProducts } from '#/lib/api-hooks/products'
 
 export function ProductGrid() {
   const { t } = useTranslation()
@@ -91,7 +91,7 @@ export function ProductGrid() {
           value={category}
           onValueChange={(v) => updateParam({ category: v })}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -104,7 +104,7 @@ export function ProductGrid() {
         </Select>
 
         <Select value={sort} onValueChange={(v) => updateParam({ sort: v })}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-45">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
           <SelectContent>

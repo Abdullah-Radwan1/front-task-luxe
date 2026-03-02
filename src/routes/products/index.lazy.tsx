@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, createLazyFileRoute } from '@tanstack/react-router'
 import { useSearchParams } from '@/lib/useSearchParams'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
@@ -27,12 +27,11 @@ import { Separator } from '@/components/ui/separator'
 import { ProductCard } from '@/components/ProductCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { TablePagination } from '@/components/TablePagination'
-import { useProducts } from '@/lib/api-hooks'
+import { useProducts } from '#/lib/api-hooks/products'
 import { useAuthStore } from '@/stores/auth-store'
-import { createFileRoute } from '@tanstack/react-router'
 
 const MAX_PRICE = 5000
-export const Route = createFileRoute('/products/')({ component: ProductsPage })
+export const Route = createLazyFileRoute('/products/')({ component: ProductsPage })
 function FiltersSidebar({ className }: { className?: string }) {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()

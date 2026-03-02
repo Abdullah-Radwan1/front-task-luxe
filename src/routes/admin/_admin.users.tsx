@@ -12,7 +12,7 @@ import {
   UserCheck,
   UserX,
 } from 'lucide-react'
-import { useUsers } from '@/lib/api-hooks'
+import { useUsers } from '#/lib/api-hooks/users'
 
 import {
   Table,

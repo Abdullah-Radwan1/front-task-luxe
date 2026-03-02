@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { useSearchParams } from '@/lib/useSearchParams'
 import { useTranslation } from 'react-i18next'
-import { useProducts } from '@/lib/api-hooks'
+import { useProducts } from '#/lib/api-hooks/products'
 import { motion } from 'framer-motion'
 
 import {

@@ -4,7 +4,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/auth-store'
 import { useWishlistStore } from '@/stores/wishlist-store'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { motion } from 'framer-motion'
 import { Heart, Trash2, ShoppingCart, ArrowRight } from 'lucide-react'
 
@@ -15,7 +15,7 @@ export default function Wishlist() {
   const { i18n } = useTranslation()
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const { items, removeItem, toggleWishlist, totalItems } = useWishlistStore()
+  const { items, removeItem, totalItems } = useWishlistStore()
 
   // Redirect to login if not authenticated
   if (!user) {
@@ -43,7 +43,7 @@ export default function Wishlist() {
           className="flex items-start justify-between gap-4 flex-wrap"
         >
           <div>
-            <h1 className="font-display text-5xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="font-display text-5xl font-bold mb-2 bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
               {t('wishlist.title')}
             </h1>
             <p className="text-muted-foreground text-lg">
@@ -54,7 +54,7 @@ export default function Wishlist() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="h-20 w-20 rounded-full bg-gradient-to-r from-accent to-primary/50 flex items-center justify-center flex-shrink-0"
+            className="h-20 w-20 rounded-full bg-linear-to-r from-accent to-primary/50 flex items-center justify-center shrink-0"
           >
             <Heart className="h-10 w-10 text-white fill-white" />
           </motion.div>
@@ -101,7 +101,7 @@ export default function Wishlist() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="group h-full overflow-hidden bg-gradient-to-br from-card to-muted/30 hover:shadow-lg transition-all duration-300">
+                <Card className="group h-full overflow-hidden bg-linear-to-br from-card to-muted/30 hover:shadow-lg transition-all duration-300">
                   {/* Product Image */}
                   <div className="relative aspect-square overflow-hidden bg-muted">
                     <img
@@ -176,7 +176,7 @@ export default function Wishlist() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+            <Card className="bg-linear-to-br from-primary/5 to-accent/5 border-primary/20">
               <CardContent className="p-6 flex items-center justify-between flex-wrap gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">
