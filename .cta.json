@@ -1,5 +1,5 @@
 {
-  "projectName": "test",
+  "projectName": "LUXE",
   "mode": "file-router",
   "typescript": true,
   "packageManager": "bun",
@@ -11,7 +11,5 @@
   "routerOnly": true,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "eslint"
-  ]
+  "chosenAddOns": ["eslint"]
 }
