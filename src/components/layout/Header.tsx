@@ -97,10 +97,11 @@ export function Header() {
   return (
     <>
       <motion.header
+        dir="ltr"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md flex justify-center"
+        className="sticky  top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md flex justify-center"
       >
         <div className="container flex h-16 items-center justify-between px-4">
           <Link

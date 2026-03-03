@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react'
 import { useSearchParams } from '@/lib/useSearchParams'
 import { useTranslation } from 'react-i18next'
 import { useProducts } from '#/lib/api-hooks/products'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import {
   Plus,
@@ -15,6 +15,10 @@ import {
   DollarSign,
   Layers,
   FolderTree,
+  Gem,
+  Wallet,
+  Clock,
+  Diamond,
 } from 'lucide-react'
 
 import { useForm } from 'react-hook-form'
@@ -192,61 +196,175 @@ export default function AdminProducts() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
+        <div className="flex items-center gap-4">
+          {/* Animated Icon Container */}
+          <motion.div
+            initial={{ scale: 0.9, rotate: -10, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 12 }}
+            className="p-3 bg-primary/10 rounded-xl cursor-pointer"
+          >
             <Package size={30} className="text-primary" />
-          </div>
-          <h1 className="text-3xl font-display font-bold">
+          </motion.div>
+
+          {/* Optional: Simple fade-in for the text to match the icon's timing */}
+          <motion.h1
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl font-display font-bold"
+          >
             {t('admin.products')}
-          </h1>
+          </motion.h1>
         </div>
-        <Button onClick={openAdd} className="gap-2">
+
+        <Button
+          onClick={openAdd}
+          className="gap-2 shadow-sm hover:shadow-md transition-shadow"
+        >
           <Plus className="h-4 w-4" /> {t('admin.addProduct')}
         </Button>
       </div>
-
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={searchQ}
-            placeholder={t('admin.search')}
-            onChange={(e) => {
-              const next = new URLSearchParams(searchParams)
-              e.target.value ? next.set('q', e.target.value) : next.delete('q')
-              setSearchParams(next)
-              setPage(1)
-            }}
-            className="pl-9"
-          />
-        </div>
-
-        <Select
-          value={categoryFilter}
-          onValueChange={(value) => {
-            const next = new URLSearchParams(searchParams)
-            value === 'all'
-              ? next.delete('category')
-              : next.set('category', value)
-            setSearchParams(next)
-            setPage(1)
-          }}
+      {/* Search + Filter Inputs */}
+      <div className="space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row gap-4"
         >
-          <SelectTrigger className="w-45">
-            <FolderTree className="h-4 w-4 mr-2 text-muted-foreground" />
-            <SelectValue placeholder={t('admin.category')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('admin.all')}</SelectItem>
-            <SelectItem value="watches">{t('categories.watches')}</SelectItem>
-            <SelectItem value="leather">{t('categories.leather')}</SelectItem>
-            <SelectItem value="accessories">
-              {t('categories.accessories')}
-            </SelectItem>
-            <SelectItem value="jewelry">{t('categories.jewelry')}</SelectItem>
-          </SelectContent>
-        </Select>
+          {/* Search Input Pop */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+            className="relative flex-1 max-w-sm"
+          >
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchQ}
+              placeholder={t('admin.search')}
+              onChange={(e) => {
+                const next = new URLSearchParams(searchParams)
+                e.target.value
+                  ? next.set('q', e.target.value)
+                  : next.delete('q')
+                setSearchParams(next)
+                setPage(1)
+              }}
+              className="pl-9 border-muted-foreground/20 focus-visible:ring-accent"
+            />
+          </motion.div>
+
+          {/* Category Select Pop */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200, delay: 0.05 }}
+          >
+            <Select
+              value={categoryFilter}
+              onValueChange={(value) => {
+                const next = new URLSearchParams(searchParams)
+                value === 'all'
+                  ? next.delete('category')
+                  : next.set('category', value)
+                setSearchParams(next)
+                setPage(1)
+              }}
+            >
+              <SelectTrigger className="w-45 border-muted-foreground/20">
+                <FolderTree className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder={t('admin.category')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center gap-2">
+                    <span>{t('admin.all')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="watches">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-blue-500" />
+                    <span>{t('categories.watches')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="leather">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-4 w-4 text-amber-700" />
+                    <span>{t('categories.leather')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="accessories">
+                  <div className="flex items-center gap-2">
+                    <Gem className="h-4 w-4 text-purple-500" />
+                    <span>{t('categories.accessories')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="jewelry">
+                  <div className="flex items-center gap-2">
+                    <Diamond className="h-4 w-4 text-rose-500" />
+                    <span>{t('categories.jewelry')}</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </motion.div>
+        </motion.div>
+
+        {/* Active Filter Badges */}
+        <div className="flex flex-wrap gap-2">
+          <AnimatePresence mode="popLayout">
+            {/* Search Badge */}
+            {searchQ && (
+              <motion.div
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-xs font-medium text-accent"
+              >
+                <Search className="h-3 w-3" />
+                <span>{searchQ}</span>
+                <button
+                  onClick={() => {
+                    const next = new URLSearchParams(searchParams)
+                    next.delete('q')
+                    setSearchParams(next)
+                  }}
+                  className="ml-1 hover:text-foreground transition-colors"
+                >
+                  ×
+                </button>
+              </motion.div>
+            )}
+
+            {/* Category Badge */}
+            {categoryFilter !== 'all' && categoryFilter && (
+              <motion.div
+                initial={{ scale: 0, rotate: 10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-xs font-medium text-primary"
+              >
+                <FolderTree className="h-3 w-3" />
+                <span className="capitalize">{categoryFilter}</span>
+                <button
+                  onClick={() => {
+                    const next = new URLSearchParams(searchParams)
+                    next.delete('category')
+                    setSearchParams(next)
+                  }}
+                  className="ml-1 hover:text-foreground transition-colors"
+                >
+                  ×
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Table */}
@@ -398,6 +516,7 @@ export default function AdminProducts() {
       </motion.div>
 
       {/* Product Form Dialog */}
+
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -413,25 +532,72 @@ export default function AdminProducts() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label>{t('admin.name')}</Label>
-              <Input {...register('name', { required: true })} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('admin.description')}</Label>
-              <Textarea
-                {...register('description', { required: true })}
-                rows={3}
+              <Label htmlFor="name">
+                {t('admin.name')} <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="name"
+                {...register('name', {
+                  required:
+                    t('admin.errors.nameRequired') || 'Name is required',
+                  minLength: {
+                    value: 3,
+                    message:
+                      t('admin.errors.nameMinLength') ||
+                      'Name must be at least 3 characters',
+                  },
+                })}
+                className={errors.name ? 'border-destructive' : ''}
               />
+              {errors.name && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label>{t('admin.category')}</Label>
+              <Label htmlFor="description">
+                {t('admin.description')}{' '}
+                <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="description"
+                {...register('description', {
+                  required:
+                    t('admin.errors.descriptionRequired') ||
+                    'Description is required',
+                  minLength: {
+                    value: 10,
+                    message:
+                      t('admin.errors.descriptionMinLength') ||
+                      'Description must be at least 10 characters',
+                  },
+                })}
+                rows={3}
+                className={errors.description ? 'border-destructive' : ''}
+              />
+              {errors.description && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">
+                {t('admin.category')}{' '}
+                <span className="text-destructive">*</span>
+              </Label>
               <Select
                 defaultValue="watches"
-                onValueChange={(v: any) => setValue('category', v)}
+                onValueChange={(v: any) => {
+                  setValue('category', v, { shouldValidate: true })
+                }}
               >
-                <SelectTrigger>
+                <SelectTrigger
+                  className={errors.category ? 'border-destructive' : ''}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -449,36 +615,86 @@ export default function AdminProducts() {
                   </SelectItem>
                 </SelectContent>
               </Select>
+              {errors.category && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.category.message}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>{t('admin.price')}</Label>
+                <Label htmlFor="price">
+                  {t('admin.price')} <span className="text-destructive">*</span>
+                </Label>
                 <Input
+                  id="price"
                   type="number"
+                  step="0.01"
                   {...register('price', {
-                    required: true,
+                    required:
+                      t('admin.errors.priceRequired') || 'Price is required',
                     valueAsNumber: true,
+                    min: {
+                      value: 0.01,
+                      message:
+                        t('admin.errors.priceMin') ||
+                        'Price must be greater than 0',
+                    },
                   })}
+                  className={errors.price ? 'border-destructive' : ''}
                 />
+                {errors.price && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.price.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label>{t('admin.stock')}</Label>
+                <Label htmlFor="stock">
+                  {t('admin.stock')} <span className="text-destructive">*</span>
+                </Label>
                 <Input
+                  id="stock"
                   type="number"
+                  step="1"
                   {...register('stock', {
-                    required: true,
+                    required:
+                      t('admin.errors.stockRequired') || 'Stock is required',
                     valueAsNumber: true,
+                    min: {
+                      value: 0,
+                      message:
+                        t('admin.errors.stockMin') ||
+                        'Stock cannot be negative',
+                    },
                   })}
+                  className={errors.stock ? 'border-destructive' : ''}
                 />
+                {errors.stock && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.stock.message}
+                  </p>
+                )}
               </div>
             </div>
+
+            {Object.keys(errors).length > 0 && (
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-sm text-destructive font-medium">
+                  Please fix the errors above before submitting.
+                </p>
+              </div>
+            )}
 
             <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setDialogOpen(false)}
+                onClick={() => {
+                  clearErrors()
+                  setDialogOpen(false)
+                }}
               >
                 Cancel
               </Button>

@@ -97,13 +97,6 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">support@luxe.com</p>
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
-          <p>
-            © {currentYear} LUXE. {t('footer.rights')}
-          </p>
-        </div>
       </div>
     </footer>
   )

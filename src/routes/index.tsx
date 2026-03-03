@@ -13,7 +13,7 @@ import { HeroSection } from '#/components/home/HeroSection'
 import { FeaturedCarousel } from '#/components/home/FeaturedCarousel'
 import { ProductGrid } from '#/components/home/ProductGrid'
 import { useAuthStore } from '@/stores/auth-store'
-import { CartDrawer } from '#/components/CartDrawer'
+import { CartDrawer } from '#/components/layout/CartDrawer'
 
 const queryClient = new QueryClient()
 

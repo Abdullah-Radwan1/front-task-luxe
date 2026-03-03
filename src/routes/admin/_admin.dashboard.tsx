@@ -224,7 +224,7 @@ export function AdminDashboard() {
               <div className="p-1.5 bg-accent/10 rounded-lg">
                 <TrendingUp className="h-4 w-4 text-accent" />
               </div>
-              Recent Activity
+              {t('dashboard.recentActivity')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -233,10 +233,12 @@ export function AdminDashboard() {
                 <div key={i} className="flex items-center gap-3 text-sm">
                   <div className="w-2 h-2 rounded-full bg-accent/50" />
                   <span className="text-muted-foreground">
-                    New order #123{i} placed
+                    {t('dashboard.newOrder', { orderNumber: `#123${i}` })}
                   </span>
-                  <span className="ml-auto text-xs text-muted-foreground/60">
-                    2 min ago
+                  <span
+                    className={`ml-auto rtl:mr-auto rtl:ml-0 text-xs text-muted-foreground/60`}
+                  >
+                    {t('dashboard.timeAgo', { minutes: 2 })}
                   </span>
                 </div>
               ))}
@@ -251,26 +253,26 @@ export function AdminDashboard() {
               <div className="p-1.5 bg-primary/10 rounded-lg">
                 <Package className="h-4 w-4 text-primary" />
               </div>
-              Inventory Status
+              {t('dashboard.inventoryStatus')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
-                  Low stock items
+                  {t('dashboard.lowStockItems')}
                 </span>
                 <span className="font-semibold text-amber-500">3</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
-                  Out of stock
+                  {t('dashboard.outOfStock')}
                 </span>
                 <span className="font-semibold text-red-500">1</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
-                  New this week
+                  {t('dashboard.newThisWeek')}
                 </span>
                 <span className="font-semibold text-green-500">12</span>
               </div>
