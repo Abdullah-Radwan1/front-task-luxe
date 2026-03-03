@@ -200,22 +200,22 @@ export function AdminLayout() {
               <div className="p-2 bg-destructive/10 rounded-full">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <span>{t('admin.logoutConfirmTitle') || 'Confirm Logout'}</span>
+              <span>{t('logout.title') || 'Confirm Logout'}</span>
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('admin.logoutConfirmMessage') ||
+              {t('logout.confirmMessage') ||
                 'Are you sure you want to log out? You will need to log in again to access the admin area.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>
-              {t('admin.cancel') || 'Cancel'}
+              {t('logout.cancel') || 'Cancel'}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleLogout}
               className="bg-destructive hover:bg-destructive/90"
             >
-              {t('admin.logout') || 'Logout'}
+              {t('logout.logout') || 'Logout'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

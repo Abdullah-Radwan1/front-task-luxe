@@ -401,34 +401,22 @@ export default function RouteComponent() {
                 variant="default"
                 className="w-full sm:w-40 bg-green-600 hover:bg-green-700"
                 onClick={() => {
-                  const existing = cartItems.find(
+                  const existingItem = cartItems.find(
                     (i) => i.product.id === product.id,
                   )
-                  const existingQty = existing ? existing.quantity : 0
 
-                  const allowed = Math.max(0, product.stock - existingQty)
-                  const toAdd = Math.min(quantity, allowed)
-
-                  if (toAdd > 0) {
+                  // Only add to cart if item doesn't exist
+                  if (!existingItem) {
+                    const toAdd = Math.min(quantity, product.stock)
                     for (let i = 0; i < toAdd; i++) addItem(product)
-
-                    if (toAdd < quantity) {
-                      toast({
-                        title: t('products.limitReached') || 'Limit Reached',
-                        description: t('products.addedPartial').replace(
-                          '{{count}}',
-                          toAdd.toString(),
-                        ),
-                      })
-                    }
-                    navigate({ to: '/checkout' })
-                  } else {
-                    navigate({ to: '/checkout' })
                   }
+
+                  // Navigate to checkout regardless
+                  navigate({ to: '/checkout' })
                 }}
               >
                 <ShoppingBag className="h-5 w-5 mr-2" />
-                {t('checkout.title') || 'Buy Now'}
+                {t('checkout.title')}
               </Button>
             </div>
 

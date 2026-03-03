@@ -231,12 +231,39 @@ const resources = {
         completed: 'Completed',
         cancelled: 'Cancelled',
         search: 'Search...',
-        logoutConfirmTitle: 'Confirm Logout',
-        logoutConfirmMessage:
+
+        noProductsFound: 'آo Products Found',
+        noOrdersFound: 'No Orders Found',
+        noUsersFound: 'No Users Found',
+
+        errors: {
+          nameRequired: 'Name is required',
+          nameMinLength: 'Name must be at least 3 characters',
+          descriptionRequired: 'Description is required',
+          descriptionMinLength: 'Description must be at least 10 characters',
+          priceRequired: 'Price is required',
+          priceMin: 'Price must be greater than 0',
+          stockRequired: 'Stock is required',
+          stockMin: 'Stock cannot be negative',
+        },
+      },
+      logout: {
+        title: 'Confirm Logout',
+        confirmMessage:
           'Are you sure you want to log out? You will need to log in again to access the admin area.',
         logout: 'Logout',
+        cancel: 'cancel',
+        confirm: 'confirm',
       },
-
+      dashboard: {
+        recentActivity: 'Recent Activity',
+        newOrder: 'New order {{orderNumber}} placed',
+        timeAgo: '{{minutes}} min ago',
+        inventoryStatus: 'Inventory Status',
+        lowStockItems: 'Low stock items',
+        outOfStock: 'Out of stock',
+        newThisWeek: 'New this week',
+      },
       checkout: {
         title: 'Checkout',
         subtitle: 'Complete your purchase securely',
@@ -503,11 +530,7 @@ const resources = {
         priceHigh: 'السعر: من الأعلى للأقل',
       },
       admin: {
-        logoutConfirmTitle: 'تأكيد تسجيل الخروج',
-        logoutConfirmMessage:
-          'هل أنت متأكد من رغبتك في تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى منطقة الإدارة.',
-        logout: 'تسجيل الخروج',
-
+        noProductsFound: 'المنتج غير موجود',
         welcomeBack: 'مرحبا بعودتك !',
         intro: 'أدخل بياناتك  للوصول إلى لوحة التحكم الإدارية',
         dashboard: 'لوحة التحكم',
@@ -548,6 +571,36 @@ const resources = {
         completed: 'مكتمل',
         cancelled: 'ملغى',
         search: 'بحث...',
+        errors: {
+          nameRequired: 'الاسم مطلوب',
+          nameMinLength: 'يجب أن يكون الاسم 3 أحرف على الأقل',
+          descriptionRequired: 'الوصف مطلوب',
+          descriptionMinLength: 'يجب أن يكون الوصف 10 أحرف على الأقل',
+          priceRequired: 'السعر مطلوب',
+          priceMin: 'يجب أن يكون السعر أكبر من 0',
+          stockRequired: 'المخزون مطلوب',
+          stockMin: 'لا يمكن أن يكون المخزون سالباً',
+        },
+
+        noOrdersFound: 'الطلب غير موجود',
+        noUsersFound: 'المستخدم غير موجود',
+      },
+      logout: {
+        title: 'تأكيد تسجيل الخروج',
+        confirmMessage:
+          'هل أنت متأكد أنك تريد تسجيل الخروج؟ ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى منطقة الإدارة.',
+        logout: 'تسجيل الخروج',
+        cancel: 'إلغاء',
+        confirm: 'تأكيد',
+      },
+      dashboard: {
+        recentActivity: 'النشاط الأخير',
+        newOrder: 'تم وضع طلب جديد {{orderNumber}}',
+        timeAgo: 'منذ {{minutes}} دقيقة',
+        inventoryStatus: 'حالة المخزون',
+        lowStockItems: 'عناصر منخفضة المخزون',
+        outOfStock: 'غير متوفر في المخزون',
+        newThisWeek: 'جديد هذا الأسبوع',
       },
       checkout: {
         title: 'الدفع',

@@ -20,11 +20,11 @@ export function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[90vh] sm:min-h-150 flex items-center overflow-hidden"
+      className="relative  p-12 flex items-center overflow-hidden"
     >
       {/* Animated Background Image with Parallax */}
       <motion.div style={{ y, opacity }} className="absolute inset-0">
-        <div className="absolute inset-0 bg-linear-to-r from-background/95 via-background/70 to-background/30 dark:from-background/98 dark:via-background/80 dark:to-background/40 z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-background/95 via-background/70 to-background/30 dark:from-background/98 dark:via-background/10 dark:to-background/20 z-10" />
         <img
           src={heroImage}
           alt={t('hero.imageAlt') || 'Luxury collection'}
@@ -72,7 +72,7 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0.9, x: -20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-accent/20 bg-linear-to-r from-accent/10 via-accent/5 to-transparent backdrop-blur-sm px-4 py-2 text-xs font-medium text-muted-foreground mb-8"
+              className=" w-fit flex items-center   justify-center gap-2 rounded-full border border-accent/20 bg-linear-to-r from-accent/10 via-accent/5 to-transparent backdrop-blur-sm px-4 py-2 text-xs font-medium text-muted-foreground mb-8"
             >
               <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" />
               <span className="bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
@@ -86,7 +86,7 @@ export function HeroSection() {
 
             {/* Animated Heading with Gradient */}
             <motion.h1
-              className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6"
+              className="font-display text-4xl sm:text-5xl lg:text-6xl text-right xl:text-7xl font-bold tracking-tight mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
@@ -103,7 +103,7 @@ export function HeroSection() {
               transition={{ delay: 0.4, duration: 0.7 }}
               className="relative"
             >
-              <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-lg  sm:text-xl text-muted-foreground dark:text-white mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
                 {t('hero.subtitle')}
               </p>
               <motion.div

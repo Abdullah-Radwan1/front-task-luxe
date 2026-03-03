@@ -2,6 +2,7 @@ import { createRootRoute, Outlet, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { AppLayout } from './index'
 import { useAuthStore } from '@/stores/auth-store'
+import { CustomCursor } from '#/components/Cursor'
 
 export const Route = createRootRoute({
   // global guard that handles authentication and role segregation
@@ -46,6 +47,7 @@ export const Route = createRootRoute({
   },
   component: () => (
     <AppLayout>
+      {/* <CustomCursor />  enable if you want it */}
       <Outlet />
       <TanStackRouterDevtools />
     </AppLayout>

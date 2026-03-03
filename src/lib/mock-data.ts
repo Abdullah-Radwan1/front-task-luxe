@@ -275,7 +275,7 @@ const defaultOrders: Order[] = [
   {
     id: 'ORD-001',
     customer: 'James Wilson',
-    email: 'james@example.com',
+    email: 'tryToSearchByMail@gmail.com',
     items: [{ productId: '1', quantity: 1, price: 2499 }],
     total: 2499,
     status: 'completed',
@@ -362,7 +362,7 @@ const defaultUsers: User[] = [
   {
     id: 'USR-004',
     name: 'Omar Hassan',
-    email: 'omar@example.com',
+    email: 'tryToSearchByMail@gmail.com',
     password: 'omar123',
     role: 'customer',
     status: 'active',

@@ -16,6 +16,8 @@ import {
   Eye,
   Download,
   Sparkles,
+  List,
+  CheckCircle,
 } from 'lucide-react'
 import { useOrders } from '#/lib/api-hooks/orders'
 
@@ -257,44 +259,43 @@ export default function AdminOrders() {
         </div>
       </div>
 
-      {/* Filters Row */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="flex flex-col sm:flex-row gap-4"
-      >
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            className="pl-9 pr-4 border-muted-foreground/20 focus-visible:ring-accent"
-            placeholder={t('admin.search')}
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              setPage(1)
-              setSelectedOrders([])
-            }}
-          />
-          {search && (
-            <button
-              onClick={() => {
-                setSearch('')
+      {/* Search + Filter Inputs */}
+      <div className="space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          {/* Search */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+            className="relative flex-1 max-w-md"
+          >
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              placeholder={t('admin.search')}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
                 setSelectedOrders([])
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              ×
-            </button>
-          )}
-        </div>
+              className="pl-9 border-muted-foreground/20 focus-visible:ring-accent"
+            />
+          </motion.div>
 
-        <div className="flex gap-2">
-          <div className="relative">
+          {/* Status Filter */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200, delay: 0.05 }}
+          >
             <Select
               value={statusFilter}
-              onValueChange={(v) => {
-                setStatusFilter(v as OrderStatus)
+              onValueChange={(value) => {
+                setStatusFilter(value as OrderStatus)
                 setPage(1)
                 setSelectedOrders([])
               }}
@@ -303,42 +304,84 @@ export default function AdminOrders() {
                 <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
                 <SelectValue placeholder={t('admin.status')} />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem value="all">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-muted-foreground" />
-                    {t('admin.all')}
+                    <List className="h-4 w-4 text-muted-foreground" />
+                    <span>{t('admin.all')}</span>
                   </div>
                 </SelectItem>
+
                 {Object.entries(statusConfig).map(([key, config]) => {
                   const Icon = config.icon
                   return (
                     <SelectItem key={key} value={key}>
                       <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4" />
-                        {t(`admin.${key}`)}
+                        <Icon
+                          className={`h-4 w-4 ${key === 'completed' ? 'text-green-500' : key === 'pending' ? 'text-yellow-500' : 'text-red-500'}`}
+                        />
+                        <span>{t(`admin.${key}`)}</span>
                       </div>
                     </SelectItem>
                   )
                 })}
               </SelectContent>
             </Select>
-          </div>
+          </motion.div>
+        </motion.div>
 
-          {/* Active filters indicator */}
-          {(statusFilter !== 'all' || search) && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="flex items-center px-3 py-2 bg-accent/10 rounded-lg text-xs font-medium text-accent"
-            >
-              {statusFilter !== 'all' && `Status: ${statusFilter}`}
-              {statusFilter !== 'all' && search && ' · '}
-              {search && `Search: "${search}"`}
-            </motion.div>
-          )}
+        {/* Active Filter Badges */}
+        <div className="flex flex-wrap gap-2">
+          <AnimatePresence mode="popLayout">
+            {/* Search Badge */}
+            {search && (
+              <motion.div
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-xs font-medium text-accent"
+              >
+                <Search className="h-3 w-3" />
+                <span>{search}</span>
+                <button
+                  onClick={() => {
+                    setSearch('')
+                    setSelectedOrders([])
+                  }}
+                  className="ml-1 hover:text-foreground transition-colors"
+                >
+                  ×
+                </button>
+              </motion.div>
+            )}
+
+            {/* Status Badge */}
+            {statusFilter !== 'all' && (
+              <motion.div
+                initial={{ scale: 0, rotate: 10 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-xs font-medium text-primary"
+              >
+                <Filter className="h-3 w-3" />
+                <span className="capitalize">{t(`admin.${statusFilter}`)}</span>
+                <button
+                  onClick={() => {
+                    setStatusFilter('all')
+                    setSelectedOrders([])
+                  }}
+                  className="ml-1 hover:text-foreground transition-colors"
+                >
+                  ×
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
 
       {/* Table */}
       <motion.div

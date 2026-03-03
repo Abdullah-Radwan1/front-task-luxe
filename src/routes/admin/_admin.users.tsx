@@ -140,18 +140,36 @@ export default function AdminUsers() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Users className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-display font-bold">
+        <div className="flex items-center gap-4">
+          {/* Animated Icon Container - Matching your Archive & Package style */}
+          <motion.div
+            initial={{ scale: 0.9, rotate: -10, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{
+              type: 'spring',
+              stiffness: 200,
+              damping: 12,
+            }}
+            className="p-3 bg-primary/10 rounded-xl cursor-pointer"
+          >
+            <Users size={30} className="text-accent" />
+          </motion.div>
+
+          {/* Text Block with a subtle slide-in */}
+          <motion.div
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+          >
+            <h1 className="text-3xl font-display font-bold">
               {t('admin.users')}
             </h1>
             <p className="text-sm text-muted-foreground">
               {processedUsers.length} total users
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
 

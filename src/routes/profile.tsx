@@ -4,15 +4,29 @@ import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
-import { User, LogOut, ShoppingBag, Heart } from 'lucide-react'
+import { User, LogOut, ShoppingBag, Heart, AlertTriangle } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+
 export const Route = createFileRoute('/profile')({
   component: Profile,
 })
+
 export default function Profile() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
 
   // Redirect to login if not authenticated
   if (!user) {
@@ -37,7 +51,7 @@ export default function Profile() {
   ]
 
   return (
-    <main className="flex-1  py-12">
+    <main className="flex-1 py-12  px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -171,13 +185,40 @@ export default function Profile() {
           <Button
             variant="destructive"
             className="gap-2 px-6"
-            onClick={handleLogout}
+            onClick={() => setLogoutDialogOpen(true)}
           >
             <LogOut className="h-4 w-4" />
             {t('nav.logout')}
           </Button>
         </motion.div>
       </motion.div>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              {t('logout.title') || 'Confirm Logout'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('logout.ConfirmMessage') ||
+                'Are you sure you want to log out? You will need to log in again to access your account.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t('logout.cancel') || 'Cancel'}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {t('logout.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   )
 }
