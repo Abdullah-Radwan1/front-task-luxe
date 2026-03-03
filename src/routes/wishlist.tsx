@@ -18,13 +18,13 @@ export default function Wishlist() {
   const { items, removeItem, totalItems } = useWishlistStore()
 
   // Redirect to login if not authenticated
-  if (!user) {
-    navigate({ to: '/login' })
-    return null
-  }
+  // if (!user) {
+  //   navigate({ to: '/login' })
+  //   return null
+  // }
 
   // Prevent admins from accessing customer wishlist
-  if (user.role === 'admin') {
+  if (user?.role === 'admin') {
     navigate({ to: '/admin' })
     return null
   }
