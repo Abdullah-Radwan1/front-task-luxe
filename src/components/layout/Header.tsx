@@ -69,7 +69,7 @@ export function Header() {
 
   const handleLogout = () => {
     logout()
-    navigate({ to: '/login' })
+
     setLogoutDialogOpen(false)
   }
 

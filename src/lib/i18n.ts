@@ -57,6 +57,18 @@ const resources = {
         needUpper: 'Must contain at least one uppercase letter',
         needNum: 'Must contain at least one number',
       },
+      brand: {
+        name: 'LUXE',
+        welcome: 'Welcome to LUXE',
+        tagline: 'Your Premier Shopping Destination',
+        description:
+          'Discover amazing products at unbeatable prices. Join thousands of happy customers who trust us for quality and service.',
+        products: '100k+ Products',
+        security: 'Secure Shopping',
+        shipping: 'Free Shipping',
+        prices: 'Best Prices',
+        customers: 'happy customers',
+      },
 
       profile: {
         welcome: 'Welcome back',
@@ -398,6 +410,19 @@ const resources = {
         passwordsDoNotMatch: 'كلمات المرور غير متطابقة',
         needUpper: 'يجب أن يحتوي على حرف كبير واحد على الأقل',
         needNum: 'يجب أن يحتوي على رقم واحد على الأقل',
+      },
+
+      brand: {
+        name: 'لوكس',
+        welcome: ' مرحبا بك في لوكس  ',
+        tagline: 'وجهتك الأولى للتسوق',
+        description:
+          'اكتشف منتجات مذهلة بأسعار لا تقبل المنافسة. انضم إلى آلاف العملاء السعداء الذين يثقون بنا في الجودة والخدمة.',
+        products: '+١٠٠ ألف منتج',
+        security: 'تسوق آمن',
+        shipping: 'شحن مجاني',
+        prices: 'أفضل الأسعار',
+        customers: 'عميل سعيد',
       },
       profile: {
         welcome: 'أهلا بك مجددا',

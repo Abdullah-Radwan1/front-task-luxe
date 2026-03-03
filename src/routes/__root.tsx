@@ -7,24 +7,7 @@ import { CustomCursor } from '#/components/Cursor'
 export const Route = createRootRoute({
   // global guard that handles authentication and role segregation
   beforeLoad: ({ location }) => {
-    const { user, isAuthenticated } = useAuthStore.getState()
-
-    // 1. redirect un-authenticated visitors to the correct login page
-    const allowPublic =
-      location.pathname === '/login' ||
-      location.pathname === '/register' ||
-      location.pathname.startsWith('/admin/login')
-
-    if (!isAuthenticated && !allowPublic) {
-      if (location.pathname.startsWith('/admin')) {
-        throw redirect({
-          to: '/admin/login',
-          search: { redirect: location.href },
-        })
-      } else {
-        throw redirect({ to: '/login', search: { redirect: location.href } })
-      }
-    }
+    const { user } = useAuthStore.getState()
 
     // 2. now handle users who are logged in
     if (user?.role === 'admin') {
