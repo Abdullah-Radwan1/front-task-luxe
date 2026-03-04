@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select'
 import { ProductCard } from '@/components/ProductCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { useProducts } from '#/lib/api-hooks/products'
+import { useProducts } from '#/lib/api-hooks/products/useProducts'
 
 export function ProductGrid() {
   const { t } = useTranslation()

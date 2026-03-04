@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { useSearchParams } from '@/lib/useSearchParams'
 import { useTranslation } from 'react-i18next'
-import { useProducts } from '#/lib/api-hooks/products'
+import { useProducts } from '#/lib/api-hooks/products/useProducts'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import {
@@ -61,7 +61,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { Product } from '@/lib/mock-data'
+import type { Product } from '#/lib/api-hooks/products/product.schema'
 
 const PAGE_SIZE = 4
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { Link, redirect, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
@@ -36,20 +36,23 @@ type FormData = {
 
 export const Route = createFileRoute('/login')({
   component: UserLogin,
+  beforeLoad: () => {
+    const { user } = useAuthStore.getState()
+    if (user) {
+      // 2. Throw a redirect instead of using the navigate hook
+      throw redirect({
+        to: user.role === 'admin' ? '/admin' : '/',
+      })
+    }
+  },
 })
 
 export default function UserLogin() {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const login = useAuthStore((s) => s.login)
-  const user = useAuthStore((s) => s.user)
+
   const { theme, toggle } = useTheme()
   const [isLoading, setIsLoading] = useState(false)
-
-  // Auto-redirect if already logged in
-  useEffect(() => {
-    if (user) navigate({ to: user.role === 'admin' ? '/admin' : '/' })
-  }, [user, navigate])
 
   const {
     register,
@@ -59,7 +62,7 @@ export default function UserLogin() {
   } = useForm<FormData>({
     defaultValues: { email: '', password: '' },
   })
-
+  const navigate = useNavigate()
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
     // Artificial delay for UX

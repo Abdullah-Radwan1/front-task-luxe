@@ -1,20 +1,4 @@
-export interface Product {
-  id: string
-  // bilingual fields
-  name: string // legacy — kept as English default
-  name_en: string
-  name_ar: string
-  description: string // legacy — kept as English default
-  description_en: string
-  description_ar: string
-  price: number
-  category: 'watches' | 'leather' | 'accessories' | 'jewelry'
-  image: string
-  stock: number
-  rating: number
-  featured: boolean
-  createdAt: string
-}
+import type { Product } from './api-hooks/products/product.schema'
 
 export interface Order {
   id: string

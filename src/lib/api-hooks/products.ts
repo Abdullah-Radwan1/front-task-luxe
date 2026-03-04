@@ -1,38 +1,33 @@
-import { useQuery } from '@tanstack/react-query'
+import {
+  productSchema,
+  productsParamsSchema,
+  productsResponseSchema,
+  type Product,
+  type ProductsParams,
+  type ProductsResponse,
+} from './products/product.schema'
 
-import { api, type Product } from '../mock-data'
-// typed response for product listing
-export interface ProductsResponse {
-  products: Product[]
-  total: number
-  totalPages: number
-  page: number
+import { api } from '../mock-data'
+import z from 'zod'
+
+export async function getProducts(
+  params?: ProductsParams,
+): Promise<ProductsResponse> {
+  // ✅ validate input params
+  const parsedParams = productsParamsSchema.parse(params ?? {})
+
+  const data = await api.getProducts(parsedParams)
+
+  // ✅ validate API response
+  return productsResponseSchema.parse(data)
 }
 
-export function useProducts(params?: {
-  category?: string
-  search?: string
-  sort?: string
-  page?: number
-  pageSize?: number
-}) {
-  return useQuery<ProductsResponse, Error>({
-    queryKey: ['products', params],
-    queryFn: () => api.getProducts(params || {}),
-  })
+export async function getProduct(id: string): Promise<Product | null> {
+  const data = await api.getProduct(id)
+  return data ? productSchema.parse(data) : null
 }
 
-export function useFeaturedProducts() {
-  return useQuery<Product[], Error>({
-    queryKey: ['featured-products'],
-    queryFn: api.getFeaturedProducts,
-  })
-}
-
-export function useProduct(id?: string) {
-  return useQuery<Product | null, Error>({
-    queryKey: ['product', id],
-    queryFn: () => api.getProduct(id || ''),
-    enabled: !!id,
-  })
+export async function getFeaturedProducts(): Promise<Product[]> {
+  const data = await api.getFeaturedProducts()
+  return z.array(productSchema).parse(data)
 }

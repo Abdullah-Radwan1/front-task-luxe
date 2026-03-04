@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useNavigate } from '@tanstack/react-router'
-import { useFeaturedProducts } from '#/lib/api-hooks/products'
+import { useFeaturedProducts } from '#/lib/api-hooks/products/useFeaturedProducts'
 import { Sparkles, ArrowRight, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
