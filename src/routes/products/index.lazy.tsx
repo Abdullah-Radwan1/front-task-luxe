@@ -30,14 +30,13 @@ import { Separator } from '@/components/ui/separator'
 import { ProductCard } from '@/components/ProductCard'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { TablePagination } from '@/components/TablePagination'
-import { useProducts } from '#/lib/api-hooks/products'
-import { useAuthStore } from '@/stores/auth-store'
+import { useProducts } from '#/lib/api-hooks/products/useProducts'
 
 const MAX_PRICE = 5000
 
 type ProductsSearch = {
   search?: string
-  sort?: string
+  sort?: 'newest' | 'price-asc' | 'price-desc'
   page?: number
   cat?: string[]
   minPrice?: number
@@ -213,15 +212,11 @@ function FiltersSidebar({
 export default function ProductsPage() {
   const navigate = useNavigate()
   const search = useSearch({ from: '/products/' }) as ProductsSearch
-  const user = useAuthStore((s) => s.user)
+
   const { t } = useTranslation()
 
   const [searchInput, setSearchInput] = useState(search.search ?? '')
   const [isFiltering, setIsFiltering] = useState(false)
-
-  useEffect(() => {
-    if (user?.role === 'admin') navigate({ to: '/admin' })
-  }, [user, navigate])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

@@ -4,7 +4,6 @@ import { Facebook, Twitter, Instagram, Mail } from 'lucide-react'
 
 export function Footer() {
   const { t } = useTranslation()
-  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="border-t bg-card">

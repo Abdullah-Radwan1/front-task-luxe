@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
@@ -8,17 +8,6 @@ import { ShoppingBag, ArrowRight, Package } from 'lucide-react'
 import { orders } from '@/lib/mock-data'
 
 export const Route = createFileRoute('/orders')({
-  beforeLoad: () => {
-    const user = useAuthStore.getState().user
-
-    if (!user) {
-      throw redirect({ to: '/login' })
-    }
-
-    if (user.role === 'admin') {
-      throw redirect({ to: '/admin' })
-    }
-  },
   component: Orders,
 })
 
@@ -46,7 +35,7 @@ function Orders() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col p-2">
       <main className="flex-1  py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -129,7 +118,7 @@ function Orders() {
                             {order.id}
                           </p>
                           <p className="text-xs text-muted-foreground mt-2">
-                            {new Date(order.date).toLocaleDateString()}
+                            {new Date(order.createdAt).toLocaleDateString()}
                           </p>
                         </div>
 
@@ -156,7 +145,7 @@ function Orders() {
                             {t('orders.items')}
                           </p>
                           <p className="font-display text-xl font-bold">
-                            {order.items.reduce(
+                            {order.cartItems.reduce(
                               (sum, item) => sum + item.quantity,
                               0,
                             )}
@@ -175,11 +164,7 @@ function Orders() {
 
                         {/* Action */}
                         <div className="md:col-span-1 flex flex-col gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full border-primary/20 hover:bg-primary/5"
-                          >
+                          <Button variant="outline" size="sm">
                             {t('orders.viewDetails')}
                           </Button>
                           {order.status !== 'cancelled' && (
@@ -201,7 +186,7 @@ function Orders() {
                           {t('orders.itemsOrdered')}
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {order.items.map((item, idx) => (
+                          {order.cartItems.map((item, idx) => (
                             <div
                               key={idx}
                               className="px-3 py-1 rounded-full bg-muted text-xs"

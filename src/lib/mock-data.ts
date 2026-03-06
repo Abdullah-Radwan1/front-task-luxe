@@ -1,14 +1,5 @@
+import type { OrderType } from './api-hooks/orders/orderSchema'
 import type { Product } from './api-hooks/products/product.schema'
-
-export interface Order {
-  id: string
-  customer: string
-  email: string
-  items: { productId: string; quantity: number; price: number }[]
-  total: number
-  status: 'pending' | 'completed' | 'cancelled'
-  date: string
-}
 
 export interface User {
   id: string
@@ -255,63 +246,64 @@ export const products: Product[] = [
 ]
 
 // default data used when nothing is stored
-const defaultOrders: Order[] = [
+const defaultOrders: OrderType[] = [
   {
     id: 'ORD-001',
-    customer: 'James Wilson',
+    customerName: 'James Wilson', // changed from 'customer' to 'customerName'
     email: 'tryToSearchByMail@gmail.com',
-    items: [{ productId: '1', quantity: 1, price: 2499 }],
+    cartItems: [{ productId: '1', quantity: 1, price: 2499 }], // changed from 'items' to 'cartItems'
     total: 2499,
     status: 'completed',
-    date: '2026-02-15',
+    createdAt: '2026-02-15', // changed from 'date' to 'createdAt'
   },
   {
     id: 'ORD-002',
-    customer: 'Sarah Chen',
+    customerName: 'Sarah Chen', // changed from 'customer' to 'customerName'
     email: 'sarah@example.com',
-    items: [
+    cartItems: [
+      // changed from 'items' to 'cartItems'
       { productId: '3', quantity: 1, price: 890 },
       { productId: '5', quantity: 2, price: 320 },
     ],
     total: 1530,
     status: 'pending',
-    date: '2026-02-20',
+    createdAt: '2026-02-20', // changed from 'date' to 'createdAt'
   },
   {
     id: 'ORD-003',
-    customer: 'Omar Hassan',
+    customerName: 'Omar Hassan', // changed from 'customer' to 'customerName'
     email: 'omar@example.com',
-    items: [{ productId: '6', quantity: 1, price: 450 }],
+    cartItems: [{ productId: '6', quantity: 1, price: 450 }], // changed from 'items' to 'cartItems'
     total: 450,
     status: 'completed',
-    date: '2026-02-22',
+    createdAt: '2026-02-22', // changed from 'date' to 'createdAt'
   },
   {
     id: 'ORD-004',
-    customer: 'Emily Taylor',
+    customerName: 'Emily Taylor', // changed from 'customer' to 'customerName'
     email: 'emily@example.com',
-    items: [{ productId: '9', quantity: 1, price: 3200 }],
+    cartItems: [{ productId: '9', quantity: 1, price: 3200 }], // changed from 'items' to 'cartItems'
     total: 3200,
     status: 'pending',
-    date: '2026-02-25',
+    createdAt: '2026-02-25', // changed from 'date' to 'createdAt'
   },
   {
     id: 'ORD-005',
-    customer: 'Michael Brown',
+    customerName: 'Michael Brown', // changed from 'customer' to 'customerName'
     email: 'michael@example.com',
-    items: [{ productId: '2', quantity: 1, price: 1899 }],
+    cartItems: [{ productId: '2', quantity: 1, price: 1899 }], // changed from 'items' to 'cartItems'
     total: 1899,
     status: 'cancelled',
-    date: '2026-02-10',
+    createdAt: '2026-02-10', // changed from 'date' to 'createdAt'
   },
   {
     id: 'ORD-006',
-    customer: 'Aisha Khan',
+    customerName: 'Aisha Khan', // changed from 'customer' to 'customerName'
     email: 'aisha@example.com',
-    items: [{ productId: '12', quantity: 1, price: 1800 }],
+    cartItems: [{ productId: '12', quantity: 1, price: 1800 }], // changed from 'items' to 'cartItems'
     total: 1800,
     status: 'completed',
-    date: '2026-02-18',
+    createdAt: '2026-02-18', // changed from 'date' to 'createdAt'
   },
 ]
 
@@ -373,7 +365,7 @@ const defaultUsers: User[] = [
 ]
 
 // exported mutable arrays that respect cached storage
-export let orders: Order[] = loadArrayFromStorage('orders', defaultOrders)
+export let orders: OrderType[] = loadArrayFromStorage('orders', defaultOrders)
 export let users: User[] = loadArrayFromStorage('users', defaultUsers)
 
 // Mock API with 1s latency
@@ -494,14 +486,14 @@ export const api = {
   ) => {
     await delay()
     const id = `ORD-${String(orders.length + 1).padStart(3, '0')}`
-    const newOrder: Order = {
+    const newOrder: OrderType = {
       id,
-      customer: customerName,
+      customerName: customerName,
       email,
-      items: cartItems,
+      cartItems: cartItems,
       total,
       status: 'pending',
-      date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString().split('T')[0],
     }
     orders.push(newOrder)
     if (typeof window !== 'undefined') {

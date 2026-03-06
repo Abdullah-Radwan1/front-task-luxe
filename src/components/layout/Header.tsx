@@ -69,11 +69,10 @@ export function Header() {
 
   const handleLogout = () => {
     logout()
-
+    navigate({ to: '/' })
     setLogoutDialogOpen(false)
   }
 
-  if (user?.role === 'admin') return null
   if (['/login', '/register', '/admin/login'].includes(pathname)) return null
 
   const MobileNavLink = ({ to, icon: Icon, children, className = '' }: any) => (
