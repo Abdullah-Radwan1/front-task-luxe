@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
 // import { orderSuccessRoute } from "@/routeTree.gen";
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/stores/auth-store'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
@@ -18,25 +18,14 @@ export default function OrderSuccess() {
   // const { orderId } = orderSuccessRoute.useParams();
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { user } = useAuthStore()
 
   // Find the order by ID
   const order = orders.find((o) => o.id === 'orderId')
   // we can get the oder from zustand store instead of fetching btw
-  // Redirect if no order found or user not authenticated
-  if (!user) {
-    navigate({ to: '/login' })
-    return null
-  }
+  // Redirect if no order found
 
   if (!order) {
     navigate({ to: '/products' })
-    return null
-  }
-
-  // Prevent admin from viewing orders
-  if (user.role === 'admin') {
-    navigate({ to: '/admin' })
     return null
   }
 
@@ -111,7 +100,7 @@ export default function OrderSuccess() {
                       {t('orderSuccess.orderDate')}
                     </p>
                     <p className="font-medium">
-                      {new Date(order.date).toLocaleDateString()}
+                      {new Date(order.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -122,7 +111,7 @@ export default function OrderSuccess() {
                     {t('orderSuccess.itemsOrdered')}
                   </p>
                   <div className="space-y-2">
-                    {order.items.map((item, idx) => (
+                    {order.cartItems.map((item, idx) => (
                       <motion.div
                         key={idx}
                         initial={{ opacity: 0, y: 10 }}
@@ -244,7 +233,7 @@ export default function OrderSuccess() {
               <p className="text-sm text-muted-foreground font-semibold mb-2">
                 {t('orderSuccess.shippingTo')}
               </p>
-              <p className="font-medium">{order.customer}</p>
+              <p className="font-medium">{order.customerName}</p>
             </CardContent>
           </Card>
           <Card className="bg-muted/30">

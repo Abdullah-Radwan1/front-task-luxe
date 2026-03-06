@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDashboardStats } from '#/lib/api-hooks/admin'
+import { useDashboardStats } from '#/lib/api-hooks/admin/admin'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/admin/_admin/dashboard')({
@@ -126,7 +126,7 @@ export function AdminDashboard() {
         animate="show"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        {statCards.map((stat, i) => {
+        {statCards.map((stat) => {
           const Icon = stat.icon
           const value = data?.[stat.key as keyof typeof data]
 

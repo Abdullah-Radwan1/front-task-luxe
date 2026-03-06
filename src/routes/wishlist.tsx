@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { createFileRoute } from '@tanstack/react-router'
-import { useAuthStore } from '@/stores/auth-store'
+
 import { useWishlistStore } from '@/stores/wishlist-store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,20 +14,8 @@ export default function Wishlist() {
   const { t } = useTranslation()
   const { i18n } = useTranslation()
   const navigate = useNavigate()
-  const { user } = useAuthStore()
+
   const { items, removeItem, totalItems } = useWishlistStore()
-
-  // Redirect to login if not authenticated
-  // if (!user) {
-  //   navigate({ to: '/login' })
-  //   return null
-  // }
-
-  // Prevent admins from accessing customer wishlist
-  if (user?.role === 'admin') {
-    navigate({ to: '/admin' })
-    return null
-  }
 
   return (
     <motion.div

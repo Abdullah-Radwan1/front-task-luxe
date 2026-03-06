@@ -228,8 +228,6 @@ export function HeroSection() {
       </motion.div>
 
       {/* Corner Decorations */}
-      <div className="absolute top-0 left-0 w-32 h-32 bg-linear-to-br from-accent/20 to-transparent rounded-br-3xl z-10" />
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-linear-to-tl from-accent/20 to-transparent rounded-tl-3xl z-10" />
     </section>
   )
 }

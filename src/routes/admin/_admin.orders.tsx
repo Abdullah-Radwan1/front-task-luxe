@@ -17,9 +17,8 @@ import {
   Download,
   Sparkles,
   List,
-  CheckCircle,
 } from 'lucide-react'
-import { useOrders } from '#/lib/api-hooks/orders'
+import { useOrders } from '#/lib/api-hooks/orders/orders'
 
 import {
   Table,
@@ -54,7 +53,7 @@ const PAGE_SIZE = 4
 
 /* -------------------- Types -------------------- */
 
-type SortColumn = 'total' | 'date' | 'customer'
+type SortColumn = 'total' | 'date' | 'customerName'
 type SortDir = 'asc' | 'desc'
 type OrderStatus = 'all' | 'completed' | 'pending' | 'cancelled'
 
@@ -123,7 +122,7 @@ export default function AdminOrders() {
       list = list.filter(
         (o) =>
           o.id.toLowerCase().includes(q) ||
-          o.customer.toLowerCase().includes(q) ||
+          o.customerName.toLowerCase().includes(q) ||
           o.total.toString().includes(q),
       )
     }
@@ -135,10 +134,13 @@ export default function AdminOrders() {
       if (sortCol === 'total') {
         return (a.total - b.total) * dir
       }
-      if (sortCol === 'customer') {
-        return a.customer.localeCompare(b.customer) * dir
+      if (sortCol === 'customerName') {
+        return a.customerName.localeCompare(b.customerName) * dir
       }
-      return (new Date(a.date).getTime() - new Date(b.date).getTime()) * dir
+      return (
+        (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) *
+        dir
+      )
     })
   }, [orders, search, sortCol, sortDir, statusFilter])
 
@@ -405,13 +407,13 @@ export default function AdminOrders() {
               </TableHead>
               <TableHead
                 className="cursor-pointer hover:bg-muted/80 transition-colors group"
-                onClick={() => toggleSort('customer')}
+                onClick={() => toggleSort('customerName')}
               >
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
-                  {t('admin.customer')}
+                  {t('admin.customerName')}
                   <span className="text-xs ml-1 text-muted-foreground">
-                    {getSortIndicator('customer')}
+                    {getSortIndicator('customerName')}
                   </span>
                 </div>
               </TableHead>
@@ -513,7 +515,7 @@ export default function AdminOrders() {
                           <div className="w-8 h-8 rounded-full bg-linear-to-br from-accent/20 to-accent/5 flex items-center justify-center">
                             <User className="h-4 w-4 text-accent" />
                           </div>
-                          {order.customer}
+                          {order.customerName}
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">
@@ -539,7 +541,7 @@ export default function AdminOrders() {
                       <TableCell className="text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(order.date).toLocaleDateString()}
+                          {new Date(order.createdAt).toLocaleDateString()}
                         </div>
                       </TableCell>
                       <TableCell>

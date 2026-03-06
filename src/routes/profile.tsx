@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router'
+import { redirect, useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,12 @@ import {
 
 export const Route = createFileRoute('/profile')({
   component: Profile,
+  beforeLoad: () => {
+    const user = useAuthStore.getState().user
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+  },
 })
 
 export default function Profile() {
@@ -31,12 +37,6 @@ export default function Profile() {
   // Redirect to login if not authenticated
   if (!user) {
     navigate({ to: '/login' })
-    return null
-  }
-
-  // Prevent admins from accessing customer profile
-  if (user.role === 'admin') {
-    navigate({ to: '/admin' })
     return null
   }
 

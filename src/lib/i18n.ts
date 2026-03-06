@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       common: {
-        notFound: 'Not found',
+        notFound: 'Not found, Try searching for another product!',
         notFoundDesc: 'The requested item could not be found.',
       },
       nav: {
@@ -218,6 +218,7 @@ const resources = {
         totalOrders: 'Total Orders',
         totalProducts: 'Total Products',
         totalUsers: 'Total Users',
+        customerName: 'Customer Name',
         addProduct: 'Add Product',
         editProduct: 'Edit Product',
         deleteProduct: 'Delete Product',
@@ -243,7 +244,7 @@ const resources = {
         completed: 'Completed',
         cancelled: 'Cancelled',
         search: 'Search...',
-
+        home: 'Home',
         noProductsFound: 'آo Products Found',
         noOrdersFound: 'No Orders Found',
         noUsersFound: 'No Users Found',
@@ -299,6 +300,7 @@ const resources = {
         quantity: 'Qty',
         subtotal: 'Subtotal',
         shipping: 'Shipping',
+        itemsInCart: 'items in the cart',
         taxes: 'Taxes (10%)',
         total: 'Total Price',
         free: 'FREE',
@@ -339,7 +341,7 @@ const resources = {
       dark: 'Dark',
       language: {
         en: 'English',
-        ar: 'العربية',
+        ar: 'Arabic',
       },
       footer: {
         tagline: 'Timeless elegance for the modern connoisseur',
@@ -359,7 +361,7 @@ const resources = {
   ar: {
     translation: {
       common: {
-        notFound: 'غير موجود', // Changed ; to ,
+        notFound: 'غير موجود, ابحث عن منتج اخر!', // Changed ; to ,
         notFoundDesc: 'العنصر المطلوب غير موجود.', // Changed ; to ,
       },
       nav: {
@@ -571,6 +573,7 @@ const resources = {
         totalOrders: 'إجمالي الطلبات',
         totalProducts: 'إجمالي المنتجات',
         totalUsers: 'إجمالي المستخدمين',
+        customerName: 'اسم العميل',
         addProduct: 'إضافة منتج',
         editProduct: 'تعديل المنتج',
         deleteProduct: 'حذف المنتج',
@@ -596,6 +599,7 @@ const resources = {
         completed: 'مكتمل',
         cancelled: 'ملغى',
         search: 'بحث...',
+        home: 'الصفحه الرئيسيه',
         errors: {
           nameRequired: 'الاسم مطلوب',
           nameMinLength: 'يجب أن يكون الاسم 3 أحرف على الأقل',
@@ -643,6 +647,7 @@ const resources = {
         cardNumber: 'رقم البطاقة',
         expiry: 'تاريخ الانتهاء',
         cvv: 'رمز الأمان',
+        itemsInCart: ' عناصر في السلة',
         placeOrder: 'تأكيد الطلب',
         processing: 'جاري المعالجة...',
         summary: 'ملخص الطلب',
@@ -701,7 +706,7 @@ const resources = {
       dark: 'داكن', // Changed from theme.dark to match English structure
       language: {
         en: 'English',
-        ar: 'العربية',
+        ar: 'Arabic',
       },
     },
   },

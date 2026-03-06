@@ -71,6 +71,7 @@ type ProductForm = {
   price: number
   stock: number
   category: 'watches' | 'leather' | 'accessories' | 'jewelry'
+  sort?: 'name' | 'price' | 'stock'
 }
 
 export const Route = createFileRoute('/admin/_admin/products')({
@@ -93,8 +94,6 @@ export default function AdminProducts() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const { data: allProducts, isLoading } = useProducts({ pageSize: 100 })
 
   const {
     register,
@@ -141,6 +140,20 @@ export default function AdminProducts() {
   const sortCol = searchParams.get('sort') || 'name'
   const sortDir = searchParams.get('dir') || 'asc'
   const categoryFilter = searchParams.get('category') || 'all'
+  const sortValue =
+    sortCol === 'price'
+      ? sortDir === 'asc'
+        ? 'price-asc'
+        : 'price-desc'
+      : 'newest'
+  const queryParams = {
+    search: searchQ || undefined,
+    category: categoryFilter === 'all' ? undefined : categoryFilter,
+    sortValue,
+    page,
+    pageSize: PAGE_SIZE,
+  }
+  const { data: allProducts, isLoading } = useProducts(queryParams)
 
   const processedProducts = useMemo(() => {
     let list = allProducts?.products ?? []
@@ -185,7 +198,7 @@ export default function AdminProducts() {
     setSearchParams(next)
   }
 
-  const onSubmit = async (data: ProductForm) => {
+  const onSubmit = async () => {
     setIsSubmitting(true)
     await new Promise((r) => setTimeout(r, 500))
     setDialogOpen(false)

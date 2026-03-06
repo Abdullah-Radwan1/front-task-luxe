@@ -19,16 +19,11 @@ import {
   Truck,
   User,
 } from 'lucide-react'
-import { useCreateOrder } from '#/lib/api-hooks/orders'
+import { useCreateOrder } from '#/lib/api-hooks/orders/orders'
 
 export const Route = createFileRoute('/checkout')({
   beforeLoad: () => {
-    const user = useAuthStore.getState().user
     const items = useCartStore.getState().items
-
-    if (!user) {
-      throw redirect({ to: '/login' })
-    }
 
     if (items.length === 0) {
       throw redirect({ to: '/products' })

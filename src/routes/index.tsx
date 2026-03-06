@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
@@ -12,7 +11,7 @@ import { Footer } from '@/components/layout/Footer'
 import { HeroSection } from '#/components/home/HeroSection'
 import { FeaturedCarousel } from '#/components/home/FeaturedCarousel'
 import { ProductGrid } from '#/components/home/ProductGrid'
-import { useAuthStore } from '@/stores/auth-store'
+
 import { CartDrawer } from '#/components/layout/CartDrawer'
 
 const queryClient = new QueryClient()
@@ -39,16 +38,6 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const navigate = useNavigate()
-  const { user } = useAuthStore()
-
-  // if an admin somehow lands here, bounce them to the panel
-  useEffect(() => {
-    if (user?.role === 'admin') {
-      navigate({ to: '/admin' })
-    }
-  }, [user, navigate])
-
   return (
     <div className="space-y-20 pb-12">
       <HeroSection />

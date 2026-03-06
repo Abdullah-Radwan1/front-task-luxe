@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
 // import { orderSuccessRoute } from "@/routeTree.gen";
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/stores/auth-store'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'framer-motion'
@@ -57,22 +57,9 @@ export default function OrderSuccess() {
   // const { orderId } = orderSuccessRoute.useParams();
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { user } = useAuthStore()
 
   // Use mock order data instead of fetching from store
   const order = mockOrder
-
-  // Redirect if user not authenticated
-  if (!user) {
-    navigate({ to: '/login' })
-    return null
-  }
-
-  // Prevent admin from viewing orders
-  if (user.role === 'admin') {
-    navigate({ to: '/admin' })
-    return null
-  }
 
   return (
     <main className="flex-1 mx-auto py-12 px-4">

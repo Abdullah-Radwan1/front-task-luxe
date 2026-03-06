@@ -1,19 +1,16 @@
+import type { ProductsParams } from './products/product.schema'
+
 export const PRODUCTS_QUERY_KEYS = {
-  all: ['products'],
+  all: ['products'] as const,
 
-  lists: () => [...PRODUCTS_QUERY_KEYS.all, 'list'],
+  lists: () => [...PRODUCTS_QUERY_KEYS.all, 'list'] as const,
 
-  list: (params?: {
-    category?: string
-    search?: string
-    sort?: string
-    page?: number
-    pageSize?: number
-  }) => [...PRODUCTS_QUERY_KEYS.lists(), params ?? {}],
+  list: (params?: ProductsParams) =>
+    [...PRODUCTS_QUERY_KEYS.lists(), params ?? {}] as const,
 
-  details: () => [...PRODUCTS_QUERY_KEYS.all, 'detail'],
+  details: () => [...PRODUCTS_QUERY_KEYS.all, 'detail'] as const,
 
-  detail: (id: string) => [...PRODUCTS_QUERY_KEYS.details(), id],
+  detail: (id: string) => [...PRODUCTS_QUERY_KEYS.details(), id] as const,
 
-  featured: () => [...PRODUCTS_QUERY_KEYS.all, 'featured'],
+  featured: () => [...PRODUCTS_QUERY_KEYS.all, 'featured'] as const,
 }

@@ -1,15 +1,15 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { Product } from "@/lib/mock-data";
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { Product } from '#/lib/api-hooks/products/product.schema'
 
 interface WishlistState {
-  items: Product[];
-  addItem: (product: Product) => void;
-  removeItem: (productId: string) => void;
-  toggleWishlist: (product: Product) => void;
-  isWishlisted: (productId: string) => boolean;
-  clearWishlist: () => void;
-  totalItems: () => number;
+  items: Product[]
+  addItem: (product: Product) => void
+  removeItem: (productId: string) => void
+  toggleWishlist: (product: Product) => void
+  isWishlisted: (productId: string) => boolean
+  clearWishlist: () => void
+  totalItems: () => number
 }
 
 export const useWishlistStore = create<WishlistState>()(
@@ -18,11 +18,11 @@ export const useWishlistStore = create<WishlistState>()(
       items: [],
       addItem: (product) =>
         set((state) => {
-          const exists = state.items.some((i) => i.id === product.id);
+          const exists = state.items.some((i) => i.id === product.id)
           if (!exists) {
-            return { items: [...state.items, product] };
+            return { items: [...state.items, product] }
           }
-          return state;
+          return state
         }),
       removeItem: (productId) =>
         set((state) => ({
@@ -30,16 +30,16 @@ export const useWishlistStore = create<WishlistState>()(
         })),
       toggleWishlist: (product) =>
         set((state) => {
-          const exists = state.items.some((i) => i.id === product.id);
+          const exists = state.items.some((i) => i.id === product.id)
           if (exists) {
-            return { items: state.items.filter((i) => i.id !== product.id) };
+            return { items: state.items.filter((i) => i.id !== product.id) }
           }
-          return { items: [...state.items, product] };
+          return { items: [...state.items, product] }
         }),
       isWishlisted: (productId) => get().items.some((i) => i.id === productId),
       clearWishlist: () => set({ items: [] }),
       totalItems: () => get().items.length,
     }),
-    { name: "wishlist-storage" },
+    { name: 'wishlist-storage' },
   ),
-);
+)

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
@@ -12,7 +12,7 @@ import {
   UserCheck,
   UserX,
 } from 'lucide-react'
-import { useUsers } from '#/lib/api-hooks/users'
+import { useUsers } from '#/lib/api-hooks/users/users'
 
 import {
   Table,
@@ -81,34 +81,30 @@ export default function AdminUsers() {
   const [sortCol, setSortCol] = useState<SortColumn>('joinedAt')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
-  const { data: users = [], isLoading } = useUsers()
+  const { data: users, isLoading } = useUsers()
 
   // Process users with search and sort
-  const processedUsers = useMemo(() => {
-    let list = users
+  const allUsers = users ?? []
 
-    // Search
-    if (search) {
-      const q = search.toLowerCase()
-      list = list.filter(
+  // --- 2. SEARCH LOGIC ---
+  const q = search.toLowerCase()
+  const filteredUsers = !search
+    ? allUsers
+    : allUsers.filter(
         (u) =>
           u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
       )
+
+  // --- 3. SORT LOGIC ---
+  const dir = sortDir === 'asc' ? 1 : -1
+  const processedUsers = [...filteredUsers].sort((a, b) => {
+    if (sortCol === 'name') {
+      return a.name.localeCompare(b.name) * dir
     }
-
-    // Sort
-    const dir = sortDir === 'asc' ? 1 : -1
-
-    return [...list].sort((a, b) => {
-      if (sortCol === 'name') {
-        return a.name.localeCompare(b.name) * dir
-      }
-      return (
-        (new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime()) * dir
-      )
-    })
-  }, [users, search, sortCol, sortDir])
-
+    return (
+      (new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime()) * dir
+    )
+  })
   // Pagination
   const totalPages = Math.ceil(processedUsers.length / PAGE_SIZE)
   const paginated = processedUsers.slice(

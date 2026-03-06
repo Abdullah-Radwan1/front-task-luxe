@@ -1,31 +1,34 @@
-import { useLocation, useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useLocation, useNavigate } from '@tanstack/react-router'
+import { useMemo } from 'react'
 
 export function useSearchParams() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const params = useMemo(() => new URLSearchParams(location.search || ''), [location.search]);
+  const params = useMemo(
+    () => new URLSearchParams(location.search || ''),
+    [location.search],
+  )
 
   const setSearchParams = (next: any) => {
-    let newSearch = '';
+    let newSearch = ''
     if (typeof next === 'function') {
-      const copy = new URLSearchParams(params.toString());
-      const res = next(copy);
-      newSearch = res.toString();
+      const copy = new URLSearchParams(params.toString())
+      const res = next(copy)
+      newSearch = res.toString()
     } else if (next instanceof URLSearchParams) {
-      newSearch = next.toString();
+      newSearch = next.toString()
     } else if (typeof next === 'object') {
-      const u = new URLSearchParams();
+      const u = new URLSearchParams()
       Object.entries(next).forEach(([k, v]) => {
-        if (v != null) u.set(k, String(v));
-      });
-      newSearch = u.toString();
+        if (v != null) u.set(k, String(v))
+      })
+      newSearch = u.toString()
     }
 
-    const path = location.pathname + (newSearch ? `?${newSearch}` : '');
-    navigate({ to: path });
-  };
+    const path = location.pathname + (newSearch ? `?${newSearch}` : '')
+    navigate({ to: path })
+  }
 
-  return [params, setSearchParams] as const;
+  return [params, setSearchParams] as const
 }

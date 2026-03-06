@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   AlertTriangle,
+  Home,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -158,10 +159,21 @@ export function AdminLayout() {
             variant="ghost"
             size="sm"
             className="w-full justify-start gap-3"
+            onClick={() => {
+              navigate({ to: '/' })
+            }}
+          >
+            <Home />
+            {t('admin.home')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-3"
             onClick={switchLang}
           >
             <Globe className="h-4 w-4" />{' '}
-            {i18n.language === 'en' ? 'العربية' : 'English'}
+            {i18n.language === 'en' ? 'Arabic' : 'English'}
           </Button>
           <Button
             variant="ghost"

@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShoppingBag, Check, Heart } from 'lucide-react'
+import { ShoppingBag, Check, HeartPlus } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/stores/cart-store'
 import { useWishlistStore } from '@/stores/wishlist-store'
 import { toast } from '@/hooks/use-toast'
 import { useTranslation } from 'react-i18next'
-import type { Product } from '@/lib/mock-data'
+import type { Product } from '#/lib/api-hooks/products/product.schema'
 
 export function ProductCard({
   product,
@@ -76,7 +76,7 @@ export function ProductCard({
             (isWishlisted ? 'text-destructive' : 'text-muted-foreground')
           }
         >
-          <Heart className="h-5 w-5" />
+          <HeartPlus color="red" className="h-5 w-5" />
         </Button>
       </div>
       <div className="p-4">
