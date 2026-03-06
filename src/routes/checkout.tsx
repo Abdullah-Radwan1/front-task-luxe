@@ -19,7 +19,7 @@ import {
   Truck,
   User,
 } from 'lucide-react'
-import { useCreateOrder } from '#/lib/api-hooks/orders/orders'
+import { useCreateOrder } from '#/lib/api-hooks/orders/useOrders'
 
 export const Route = createFileRoute('/checkout')({
   beforeLoad: () => {

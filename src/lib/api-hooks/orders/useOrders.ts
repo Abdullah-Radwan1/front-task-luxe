@@ -1,15 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryOptions,
+} from '@tanstack/react-query'
 import { createOrderSchema, ordersSchema, type OrdersType } from './orderSchema'
 import { api } from '#/lib/mock-data'
 import type z from 'zod'
 
-export function useOrders() {
-  return useQuery<OrdersType, Error>({
+export function useOrders<TData = OrdersType>(
+  options?: UseQueryOptions<OrdersType, Error, TData>,
+) {
+  return useQuery<OrdersType, Error, TData>({
     queryKey: ['orders'],
     queryFn: async () => {
       const orders = await api.getOrders()
-      return ordersSchema.parse(orders) // validate API response
+      return ordersSchema.parse(orders)
     },
+    ...options,
   })
 }
 

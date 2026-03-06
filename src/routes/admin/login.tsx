@@ -27,7 +27,7 @@ import { Sun, Moon, Globe, Mail, Lock, LogIn, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const schema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 })
 

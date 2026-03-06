@@ -18,7 +18,7 @@ import {
   Sparkles,
   List,
 } from 'lucide-react'
-import { useOrders } from '#/lib/api-hooks/orders/orders'
+import { useOrders } from '#/lib/api-hooks/orders/useOrders'
 
 import {
   Table,

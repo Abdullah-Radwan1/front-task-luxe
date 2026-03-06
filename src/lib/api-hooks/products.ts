@@ -22,9 +22,9 @@ export async function getProducts(
   return productsResponseSchema.parse(data)
 }
 
-export async function getProduct(id: string): Promise<Product | null> {
+export async function getProduct(id: string): Promise<Product> {
   const data = await api.getProduct(id)
-  return data ? productSchema.parse(data) : null
+  return productSchema.parse(data)
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
