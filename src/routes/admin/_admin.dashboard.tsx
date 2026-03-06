@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDashboardStats } from '#/lib/api-hooks/admin/admin'
+import { useDashboardStats } from '#/lib/api-hooks/admin/useAdmin'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/admin/_admin/dashboard')({

@@ -3,13 +3,13 @@ import { z } from 'zod'
 // 1️⃣ Schema for Register
 export const registerUserSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'), // Note: it's z.string().email(), not z.email()
+  email: z.email('Invalid email address'), // Note: it's z.string().email(), not z.email()
   password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
 // 2️⃣ Schema for Login
 export const loginUserSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 })
 
@@ -17,9 +17,9 @@ export const loginUserSchema = z.object({
 export const userSchema = z.object({
   id: z.string(),
   name: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   password: z.string(),
-  role: z.enum(['admin', 'user']), // Aligns with 'admin'
+  role: z.enum(['admin', 'customer']), // Aligns with 'admin'
   status: z.enum(['active', 'inactive']), // Aligns with 'active'
   joinedAt: z.string(), // '2025-01-01' is a string
 })
