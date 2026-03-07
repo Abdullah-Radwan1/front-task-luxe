@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as RegisterRouteImport } from './routes/register'
@@ -21,6 +19,7 @@ import { Route as NotFoundRouteImport } from './routes/notFound'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductsIndexRouteImport } from './routes/products/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProductsIdRouteImport } from './routes/products/$id'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -29,8 +28,6 @@ import { Route as AdminAdminUsersRouteImport } from './routes/admin/_admin.users
 import { Route as AdminAdminProductsRouteImport } from './routes/admin/_admin.products'
 import { Route as AdminAdminOrdersRouteImport } from './routes/admin/_admin.orders'
 import { Route as AdminAdminDashboardRouteImport } from './routes/admin/_admin.dashboard'
-
-const ProductsIndexLazyRouteImport = createFileRoute('/products/')()
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -82,13 +79,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductsIndexLazyRoute = ProductsIndexLazyRouteImport.update({
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() =>
-  import('./routes/products/index.lazy').then((d) => d.Route),
-)
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -145,7 +140,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/products/$id': typeof ProductsIdRoute
   '/admin/': typeof AdminIndexRoute
-  '/products/': typeof ProductsIndexLazyRoute
+  '/products/': typeof ProductsIndexRoute
   '/admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/orders': typeof AdminAdminOrdersRoute
   '/admin/products': typeof AdminAdminProductsRoute
@@ -165,7 +160,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/login': typeof AdminLoginRoute
   '/products/$id': typeof ProductsIdRoute
-  '/products': typeof ProductsIndexLazyRoute
+  '/products': typeof ProductsIndexRoute
   '/admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/orders': typeof AdminAdminOrdersRoute
   '/admin/products': typeof AdminAdminProductsRoute
@@ -187,7 +182,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/products/$id': typeof ProductsIdRoute
   '/admin/': typeof AdminIndexRoute
-  '/products/': typeof ProductsIndexLazyRoute
+  '/products/': typeof ProductsIndexRoute
   '/admin/_admin/dashboard': typeof AdminAdminDashboardRoute
   '/admin/_admin/orders': typeof AdminAdminOrdersRoute
   '/admin/_admin/products': typeof AdminAdminProductsRoute
@@ -273,7 +268,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   ProductsIdRoute: typeof ProductsIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
-  ProductsIndexLazyRoute: typeof ProductsIndexLazyRoute
+  ProductsIndexRoute: typeof ProductsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -352,7 +347,7 @@ declare module '@tanstack/react-router' {
       id: '/products/'
       path: '/products'
       fullPath: '/products/'
-      preLoaderRoute: typeof ProductsIndexLazyRouteImport
+      preLoaderRoute: typeof ProductsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -447,7 +442,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   ProductsIdRoute: ProductsIdRoute,
   AdminIndexRoute: AdminIndexRoute,
-  ProductsIndexLazyRoute: ProductsIndexLazyRoute,
+  ProductsIndexRoute: ProductsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

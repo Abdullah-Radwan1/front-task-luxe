@@ -28,6 +28,8 @@ export function HeroSection() {
         <img
           src={heroImage}
           alt={t('hero.imageAlt') || 'Luxury collection'}
+          fetchPriority="high"
+          loading="eager"
           className="h-full w-full object-cover scale-105"
         />
 
@@ -60,7 +62,7 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 z-20">
-        <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+        <div className="flex flex-col items-center lg:items-start">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,7 +88,7 @@ export function HeroSection() {
 
             {/* Animated Heading with Gradient */}
             <motion.h1
-              className="font-display text-4xl sm:text-5xl lg:text-6xl text-right xl:text-7xl font-bold tracking-tight mb-6"
+              className="font-display text-4xl sm:text-5xl lg:text-6xl  xl:text-7xl font-bold tracking-tight mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
@@ -183,7 +185,7 @@ export function HeroSection() {
                 <motion.div
                   key={i}
                   whileHover={{ y: -2 }}
-                  className="text-center lg:text-left"
+                  className="text-center "
                 >
                   <div className="text-2xl font-bold bg-linear-to-r from-foreground to-accent bg-clip-text text-transparent">
                     {stat.value}

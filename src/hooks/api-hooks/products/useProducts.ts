@@ -1,12 +1,7 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
-import type { Product, ProductsParams } from './product.schema'
+import type { ProductsParams, ProductsResponse } from './product.schema'
 import { PRODUCTS_QUERY_KEYS } from '../constants'
 import { getProducts } from '../products'
-
-export type ProductsResponse = {
-  products: Product[]
-  totalPages: number
-}
 
 export function useProducts(
   params?: ProductsParams,
@@ -15,6 +10,7 @@ export function useProducts(
   return useQuery<ProductsResponse>({
     queryKey: PRODUCTS_QUERY_KEYS.list(params),
     queryFn: () => getProducts(params),
+    staleTime: 1000 * 60 * 5, // Keep data "fresh" for 5 minutes
     ...options,
   })
 }

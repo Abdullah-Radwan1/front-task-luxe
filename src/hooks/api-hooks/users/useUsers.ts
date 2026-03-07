@@ -1,23 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../mock-data'
+import { api } from '../../../lib/mock-data'
 import { z } from 'zod'
 
 import {
-  userSchema,
   registerUserSchema,
   loginUserSchema,
-  type UserType,
+  paginatedUsersSchema,
 } from './userSchema' // افترضنا نفس الشيء للمستخدمين
 
 // -----------------------------
 // Users
 // -----------------------------
-export function useUsers() {
-  return useQuery<UserType[], Error>({
-    queryKey: ['users'],
+export function useUsers(page = 1, pageSize = 6) {
+  return useQuery({
+    queryKey: ['users', page, pageSize],
+    staleTime: 1000 * 60 * 5, // Keep data "fresh" for 5 minutes
     queryFn: async () => {
-      const users = await api.getUsers()
-      return z.array(userSchema).parse(users) // validate API response
+      const response = await api.getUsers({ page, pageSize })
+      return paginatedUsersSchema.parse(response) // validate API response
     },
   })
 }

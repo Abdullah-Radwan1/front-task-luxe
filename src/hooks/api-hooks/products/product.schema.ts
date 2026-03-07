@@ -54,11 +54,16 @@ export type Product = z.infer<typeof productSchema>
 /* Query Params */
 /* -------------------- */
 export const productsParamsSchema = z.object({
-  category: z.string().optional(),
+  category: z
+    .union([productCategorySchema, z.array(productCategorySchema)])
+    .optional(),
   search: z.string().optional(),
-  sort: z.enum(['price-asc', 'price-desc', 'newest']).optional(),
-  page: z.number().int().positive().optional(),
-  pageSize: z.number().int().positive().optional(),
+  sort: z.enum(['price-asc', 'price-desc', 'newest', 'name']).optional(),
+  page: z.coerce.number().int().positive().optional(),
+  pageSize: z.coerce.number().int().positive().optional(),
+  minPrice: z.coerce.number().int().nonnegative().optional(),
+  maxPrice: z.coerce.number().int().nonnegative().optional(),
+  inStock: z.coerce.boolean().optional(),
 })
 
 export type ProductsParams = z.infer<typeof productsParamsSchema>

@@ -7,7 +7,7 @@ import { useCartStore } from '@/stores/cart-store'
 import { useWishlistStore } from '@/stores/wishlist-store'
 import { toast } from '@/hooks/use-toast'
 import { useTranslation } from 'react-i18next'
-import type { Product } from '#/lib/api-hooks/products/product.schema'
+import type { Product } from '#/hooks/api-hooks/products/product.schema'
 
 export function ProductCard({
   product,
@@ -67,17 +67,17 @@ export function ProductCard({
           </div>
         </Link>
         {/* wishlist button */}
-        <Button
-          variant="ghost"
-          size="icon"
+
+        <div
           onClick={handleWishlist}
-          className={
-            `absolute top-2 right-2 transition-colors ` +
-            (isWishlisted ? 'text-destructive' : 'text-muted-foreground')
-          }
+          className="absolute hover:scale-110 hover:cursor-pointer transition top-2 right-2"
         >
-          <HeartPlus color="red" className="h-5 w-5" />
-        </Button>
+          {isWishlisted ? (
+            <img width={25} height={25} alt="Wishlisted" src="/heart.svg" />
+          ) : (
+            <HeartPlus width={25} height={25} className=" text-primary" />
+          )}
+        </div>
       </div>
       <div className="p-4">
         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">

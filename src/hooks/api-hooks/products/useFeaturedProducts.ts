@@ -7,6 +7,7 @@ export function useFeaturedProducts(options?: UseQueryOptions<Product[]>) {
   return useQuery<Product[]>({
     queryKey: PRODUCTS_QUERY_KEYS.featured(),
     queryFn: getFeaturedProducts,
+    staleTime: 1000 * 60 * 5, // Keep data "fresh" for 5 minutes
     ...options,
   })
 }

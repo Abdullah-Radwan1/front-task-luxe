@@ -18,7 +18,7 @@ import {
   Sparkles,
   List,
 } from 'lucide-react'
-import { useOrders } from '#/lib/api-hooks/orders/useOrders'
+import { useOrders } from '#/hooks/api-hooks/orders/useOrders'
 
 import {
   Table,
@@ -104,7 +104,9 @@ export default function AdminOrders() {
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
 
-  const { data: orders = [], isLoading } = useOrders()
+  const { data, isLoading } = useOrders({ page, pageSize: PAGE_SIZE })
+  const orders = data?.orders ?? []
+  const totalPages = data?.totalPages ?? 1
 
   /* -------------------- Search + Filter + Sort -------------------- */
 
@@ -146,12 +148,7 @@ export default function AdminOrders() {
 
   /* -------------------- Pagination -------------------- */
 
-  const totalPages = Math.ceil(processedOrders.length / PAGE_SIZE)
-
-  const paginated = useMemo(
-    () => processedOrders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [processedOrders, page],
-  )
+  const paginated = data?.orders ?? []
 
   const toggleSort = (col: SortColumn) => {
     setPage(1)

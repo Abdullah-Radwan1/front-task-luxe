@@ -8,7 +8,6 @@ export const orderItemSchema = z.object({
   quantity: z.number().int().positive(),
   price: z.number().positive(),
 })
-
 export type OrderItem = z.infer<typeof orderItemSchema>
 
 // -----------------------------
@@ -20,11 +19,10 @@ export const createOrderSchema = z.object({
   cartItems: z.array(orderItemSchema).min(1, 'Cart cannot be empty'),
   total: z.number().positive('Total must be positive'),
 })
-
 export type CreateOrderInput = z.infer<typeof createOrderSchema>
 
 // -----------------------------
-// 3️⃣ Order Schema (full order from API)
+// 3️⃣ Full Order Schema (from API)
 // -----------------------------
 export const orderSchema = z.object({
   id: z.string(),
@@ -32,12 +30,19 @@ export const orderSchema = z.object({
   email: z.email(),
   cartItems: z.array(orderItemSchema),
   total: z.number(),
+  status: z.enum(['completed', 'pending', 'cancelled']),
   createdAt: z.string().refine((date) => !Number.isNaN(Date.parse(date)), {
     message: 'Invalid ISO date',
   }),
-  status: z.enum(['completed', 'pending', 'cancelled']), // <-- add this
 })
-
 export type OrderType = z.infer<typeof orderSchema>
-export const ordersSchema = z.array(orderSchema)
-export type OrdersType = z.infer<typeof ordersSchema>
+
+// -----------------------------
+// 4️⃣ Paginated Orders Response
+// -----------------------------
+export const ordersResponseSchema = z.object({
+  orders: z.array(orderSchema),
+  total: z.number(), // total number of orders
+  totalPages: z.number(), // total pages based on pageSize
+})
+export type OrdersResponse = z.infer<typeof ordersResponseSchema>

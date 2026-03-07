@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, Link } from '@tanstack/react-router'
+import { useState } from 'react'
+import { useNavigate, Link, redirect } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
@@ -45,13 +45,17 @@ type FormData = {
 
 export const Route = createFileRoute('/register')({
   component: Register,
+  beforeLoad: () => {
+    const user = useAuthStore.getState().user
+    if (user) throw redirect({ to: '/' })
+  },
 })
 
 export default function Register() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const registerUser = useAuthStore((s) => s.register)
-  const user = useAuthStore((s) => s.user)
+
   const { theme, toggle } = useTheme()
   const [serverError, setServerError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -67,10 +71,6 @@ export default function Register() {
 
   const passwordValue = watch('password', '')
   const isRtl = i18n.language === 'ar'
-
-  useEffect(() => {
-    if (user) navigate({ to: user.role === 'admin' ? '/admin' : '/' })
-  }, [user, navigate])
 
   const onSubmit = (data: FormData) => {
     setIsLoading(true)

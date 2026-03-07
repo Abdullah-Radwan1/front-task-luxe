@@ -1,9 +1,18 @@
-import type { UsersType, UserType } from '#/hooks/api-hooks/users/userSchema'
 import type { OrderType } from '../hooks/api-hooks/orders/orderSchema'
 import type {
   Product,
   ProductsParams,
 } from '../hooks/api-hooks/products/product.schema'
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  password: string // stored in cleartext for mock purposes
+  role: 'admin' | 'customer'
+  status: 'active' | 'inactive'
+  joinedAt: string
+}
 
 // helper to safely read JSON arrays from localStorage
 function loadArrayFromStorage<T>(key: string, fallback: T[]): T[] {
@@ -17,7 +26,6 @@ function loadArrayFromStorage<T>(key: string, fallback: T[]): T[] {
   return [...fallback]
 }
 
-// Mock products and orders arrays
 const productImages = [
   'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop',
   'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop',
@@ -32,6 +40,7 @@ const productImages = [
   'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop',
   'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop',
 ]
+
 export const products: Product[] = [
   {
     id: '1',
@@ -301,7 +310,7 @@ const defaultOrders: OrderType[] = [
   },
 ]
 
-const defaultUsers: UsersType = [
+const defaultUsers: User[] = [
   {
     id: 'USR-001',
     name: 'Admin User',
@@ -358,23 +367,26 @@ const defaultUsers: UsersType = [
   },
 ]
 
+// exported mutable arrays that respect cached storage
 export let orders: OrderType[] = loadArrayFromStorage('orders', defaultOrders)
-export let users: UsersType = loadArrayFromStorage('users', defaultUsers)
+export let users: User[] = loadArrayFromStorage('users', defaultUsers)
 
+// Mock API with 1s latency
 const delay = (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// ---------------------- API ----------------------
 export const api = {
-  getProducts: async (params?: ProductsParams) => {
+  getProducts: async (params?: {
+    category?: string
+    search?: string
+    sort?: string
+    page?: number
+    pageSize?: number
+  }) => {
     await delay()
     let filtered = [...products]
-
-    // فئات متعددة
-    if (params?.category?.length) {
-      filtered = filtered.filter((p) => params.category!.includes(p.category))
+    if (params?.category && params.category !== 'all') {
+      filtered = filtered.filter((p) => p.category === params.category)
     }
-
-    // البحث
     if (params?.search) {
       const s = params.search.toLowerCase()
       filtered = filtered.filter(
@@ -383,8 +395,6 @@ export const api = {
           p.description.toLowerCase().includes(s),
       )
     }
-
-    // الترتيب
     if (params?.sort === 'price-asc') filtered.sort((a, b) => a.price - b.price)
     else if (params?.sort === 'price-desc')
       filtered.sort((a, b) => b.price - a.price)
@@ -394,17 +404,8 @@ export const api = {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
 
-    // Price filter
-    if (params?.minPrice != null)
-      filtered = filtered.filter((p) => p.price >= params.minPrice!)
-    if (params?.maxPrice != null)
-      filtered = filtered.filter((p) => p.price <= params.maxPrice!)
-
-    // In stock
-    if (params?.inStock) filtered = filtered.filter((p) => p.stock > 0)
-
-    const page = params?.page ?? 1
-    const pageSize = params?.pageSize ?? 6
+    const page = params?.page || 1
+    const pageSize = params?.pageSize || 6
     const total = filtered.length
     const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
 
@@ -415,6 +416,7 @@ export const api = {
       page,
     }
   },
+
   getFeaturedProducts: async () => {
     await delay()
     return products.filter((p) => p.featured)
@@ -425,57 +427,37 @@ export const api = {
     return products.find((p) => p.id === id) || null
   },
 
-  // ✅ Orders API with proper pagination
-  getOrders: async (params?: { page?: number; pageSize?: number }) => {
+  getOrders: async (params?: ProductsParams) => {
     await delay()
 
-    const pageSize = params?.pageSize ?? 6
-    const page = params?.page ?? 1
+    const pageSize = params?.pageSize ?? 6 // default page size 6
+    const page = params?.page ?? 1 // default page 1
 
-    const totalOrders = orders.length
-    const totalPages = Math.ceil(totalOrders / pageSize)
-
+    // slice orders according to pagination
     const start = (page - 1) * pageSize
     const end = start + pageSize
     const paginatedOrders = orders.slice(start, end)
 
     return {
       orders: paginatedOrders,
-      total: totalOrders,
-      totalPages,
-      page,
-      pageSize,
+      total: orders.length,
+      totalPages: Math.ceil(orders.length / pageSize),
     }
   },
 
-  getUsers: async (params?: { page?: number; pageSize?: number }) => {
+  getUsers: async () => {
     await delay()
-
-    const pageSize = params?.pageSize ?? 6
-    const page = params?.page ?? 1
-
-    const totalUsers = users.length
-    const totalPages = Math.ceil(totalUsers / pageSize)
-
-    const start = (page - 1) * pageSize
-    const end = start + pageSize
-    const paginatedUsers = users.slice(start, end)
-
-    return {
-      users: paginatedUsers,
-      total: totalUsers,
-      totalPages,
-      page,
-      pageSize,
-    }
+    return users
   },
 
+  // registers a new customer and returns the created user
   registerUser: async (name: string, email: string, password: string) => {
     await delay()
-    if (users.some((u) => u.email === email))
+    if (users.some((u) => u.email === email)) {
       throw new Error('Email already in use')
+    }
     const id = `USR-${String(users.length + 1).padStart(3, '0')}`
-    const newUser: UserType = {
+    const newUser: User = {
       id,
       name,
       email,
@@ -485,11 +467,14 @@ export const api = {
       joinedAt: new Date().toISOString().split('T')[0],
     }
     users.push(newUser)
-    if (typeof window !== 'undefined')
+    // persist
+    if (typeof window !== 'undefined') {
       localStorage.setItem('users', JSON.stringify(users))
+    }
     return newUser
   },
 
+  // simple authentication check using stored passwords
   loginUser: async (email: string, password: string) => {
     await delay()
     return (
@@ -519,16 +504,17 @@ export const api = {
     const id = `ORD-${String(orders.length + 1).padStart(3, '0')}`
     const newOrder: OrderType = {
       id,
-      customerName,
+      customerName: customerName,
       email,
-      cartItems,
+      cartItems: cartItems,
       total,
       status: 'pending',
       createdAt: new Date().toISOString().split('T')[0],
     }
     orders.push(newOrder)
-    if (typeof window !== 'undefined')
+    if (typeof window !== 'undefined') {
       localStorage.setItem('orders', JSON.stringify(orders))
+    }
     return newOrder
   },
 }

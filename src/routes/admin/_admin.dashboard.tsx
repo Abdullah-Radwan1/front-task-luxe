@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDashboardStats } from '#/lib/api-hooks/admin/useAdmin'
+import { useDashboardStats } from '#/hooks/api-hooks/admin/useAdmin'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/admin/_admin/dashboard')({
@@ -98,7 +98,7 @@ export function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-accent/10 rounded-xl">
-              <Sparkles className="h-6 w-6 text-accent" />
+              <Sparkles size={28} className=" text-accent" />
             </div>
             <div>
               <h1 className="font-display text-3xl font-bold bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
