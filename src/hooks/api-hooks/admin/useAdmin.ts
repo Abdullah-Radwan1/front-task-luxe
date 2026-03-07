@@ -8,6 +8,7 @@ export function useDashboardStats<TData = DashboardStats>(
 ) {
   return useQuery<DashboardStats, Error, TData>({
     queryKey: ['dashboard-stats'],
+    staleTime: 1000 * 60 * 5, // Keep data "fresh" for 5 minutes
     queryFn: async () => {
       const stats = await api.getDashboardStats()
       return dashboardStatsSchema.parse(stats)

@@ -12,7 +12,7 @@ import {
   UserCheck,
   UserX,
 } from 'lucide-react'
-import { useUsers } from '#/lib/api-hooks/users/useUsers'
+import { useUsers } from '#/hooks/api-hooks/users/useUsers'
 
 import {
   Table,
@@ -26,12 +26,10 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { TablePagination } from '@/components/TablePagination'
-
 import { createFileRoute } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '#/components/ui/avatar'
 
 const PAGE_SIZE = 4
-
 type SortColumn = 'name' | 'joinedAt'
 type SortDir = 'asc' | 'desc'
 
@@ -65,52 +63,27 @@ const roleConfig = {
     bg: 'bg-purple-500/10',
     label: 'admin',
   },
-  user: {
+  customer: {
     icon: UserCog,
     color: 'text-blue-500',
     bg: 'bg-blue-500/10',
-    label: 'user',
+    label: 'customer',
   },
 }
 
 export default function AdminUsers() {
   const { t } = useTranslation()
-
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [sortCol, setSortCol] = useState<SortColumn>('joinedAt')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
-  const { data: users, isLoading } = useUsers()
+  // Fetch paginated users from API
+  const { data, isLoading } = useUsers(page, PAGE_SIZE)
 
-  // Process users with search and sort
-  const allUsers = users ?? []
-
-  // --- 2. SEARCH LOGIC ---
-  const q = search.toLowerCase()
-  const filteredUsers = !search
-    ? allUsers
-    : allUsers.filter(
-        (u) =>
-          u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
-      )
-
-  // --- 3. SORT LOGIC ---
-  const dir = sortDir === 'asc' ? 1 : -1
-  const processedUsers = [...filteredUsers].sort((a, b) => {
-    if (sortCol === 'name') {
-      return a.name.localeCompare(b.name) * dir
-    }
-    return (
-      (new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime()) * dir
-    )
-  })
-  // Pagination
-  const totalPages = Math.ceil(processedUsers.length / PAGE_SIZE)
-  const paginated = processedUsers.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  )
+  const users = data?.users ?? []
+  const totalPages = data?.totalPages ?? 1
+  const totalUsers = data?.total ?? 0
 
   const toggleSort = (col: SortColumn) => {
     setPage(1)
@@ -122,38 +95,30 @@ export default function AdminUsers() {
     }
   }
 
-  // Get initials for avatar
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(' ')
       .map((word) => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2)
-  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {/* Animated Icon Container - Matching your Archive & Package style */}
           <motion.div
             initial={{ scale: 0.9, rotate: -10, opacity: 0 }}
             animate={{ scale: 1, rotate: 0, opacity: 1 }}
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.9 }}
-            transition={{
-              type: 'spring',
-              stiffness: 200,
-              damping: 12,
-            }}
+            transition={{ type: 'spring', stiffness: 200, damping: 12 }}
             className="p-3 bg-primary/10 rounded-xl cursor-pointer"
           >
             <Users size={30} className="text-accent" />
           </motion.div>
 
-          {/* Text Block with a subtle slide-in */}
           <motion.div
             initial={{ x: -10, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -163,7 +128,7 @@ export default function AdminUsers() {
               {t('admin.users')}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {processedUsers.length} total users
+              {totalUsers} total users
             </p>
           </motion.div>
         </div>
@@ -243,7 +208,7 @@ export default function AdminUsers() {
                   </TableCell>
                 </TableRow>
               ))
-            ) : paginated.length === 0 ? (
+            ) : users.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -253,7 +218,7 @@ export default function AdminUsers() {
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.map((user, index) => {
+              users.map((user, index) => {
                 const status =
                   statusConfig[user.status as keyof typeof statusConfig]
                 const role = roleConfig[user.role as keyof typeof roleConfig]
@@ -323,8 +288,7 @@ export default function AdminUsers() {
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Showing {(page - 1) * PAGE_SIZE + 1} to{' '}
-          {Math.min(page * PAGE_SIZE, processedUsers.length)} of{' '}
-          {processedUsers.length} users
+          {Math.min(page * PAGE_SIZE, totalUsers)} of {totalUsers} users
         </p>
         <TablePagination
           page={page}

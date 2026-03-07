@@ -25,7 +25,7 @@ import { toast } from '@/hooks/use-toast'
 import { createFileRoute } from '@tanstack/react-router'
 
 import ProductPageSkeleton from './-components/ProductPageSkeleton'
-import { useProduct } from '#/lib/api-hooks/products/useProduct'
+import { useProduct } from '#/hooks/api-hooks/products/useProduct'
 
 export const Route = createFileRoute('/products/$id')({
   component: RouteComponent,

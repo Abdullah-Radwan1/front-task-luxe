@@ -23,7 +23,14 @@ export const userSchema = z.object({
   status: z.enum(['active', 'inactive']), // Aligns with 'active'
   joinedAt: z.string(), // '2025-01-01' is a string
 })
-
+// Schema for paginated users
+export const paginatedUsersSchema = z.object({
+  users: z.array(userSchema),
+  total: z.number(),
+  totalPages: z.number(),
+  page: z.number(),
+  pageSize: z.number(),
+})
 // 4️⃣ Schema for Array of Users
 export const usersSchema = z.array(userSchema)
 

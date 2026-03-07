@@ -1,4 +1,4 @@
-import type { Product } from '#/lib/api-hooks/products/product.schema'
+import type { Product } from '#/hooks/api-hooks/products/product.schema'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 

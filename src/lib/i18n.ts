@@ -245,7 +245,7 @@ const resources = {
         cancelled: 'Cancelled',
         search: 'Search...',
         home: 'Home',
-        noProductsFound: 'آo Products Found',
+        noProductsFound: 'No Products Found',
         noOrdersFound: 'No Orders Found',
         noUsersFound: 'No Users Found',
 

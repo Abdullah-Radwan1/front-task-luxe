@@ -7,7 +7,7 @@ import {
   type ProductsResponse,
 } from './products/product.schema'
 
-import { api } from '../mock-data'
+import { api } from '../../lib/mock-data'
 import z from 'zod'
 
 export async function getProducts(
