@@ -48,6 +48,7 @@ import { useTheme } from '@/components/ThemeProvider'
 import { useCartStore } from '@/stores/cart-store'
 import { useAuthStore } from '@/stores/auth-store'
 import { useState } from 'react'
+import { useLanguageStore } from '#/stores/language-store'
 
 export function Header() {
   const { t, i18n } = useTranslation()
@@ -60,11 +61,12 @@ export function Header() {
   const location = useLocation()
   const navigate = useNavigate()
   const pathname = (location as any)?.pathname || window.location.pathname
-
+  const { setLanguage } = useLanguageStore()
   const switchLang = () => {
     const next = i18n.language === 'en' ? 'ar' : 'en'
     i18n.changeLanguage(next)
     document.documentElement.dir = next === 'ar' ? 'rtl' : 'ltr'
+    setLanguage(next)
   }
 
   const handleLogout = () => {

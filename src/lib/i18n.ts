@@ -711,11 +711,12 @@ const resources = {
     },
   },
 }
-
+const storedData = localStorage.getItem('app-language-storage')
+const initialLang = storedData ? JSON.parse(storedData).state.language : 'en'
 // Initialize i18n
 i18n.use(initReactI18next).init({
   resources,
-  lng: 'en',
+  lng: initialLang,
   fallbackLng: 'en',
   interpolation: {
     escapeValue: false,
