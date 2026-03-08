@@ -304,7 +304,7 @@ const defaultOrders: OrderType[] = [
 const defaultUsers: UsersType = [
   {
     id: 'USR-001',
-    name: 'Admin User',
+    name: 'Admin Abdullah',
     email: 'admin@luxe.com',
     password: 'admin123',
     role: 'admin',

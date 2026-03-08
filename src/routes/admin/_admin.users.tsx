@@ -42,7 +42,6 @@ const PAGE_SIZE = 4
 type SortColumn = 'name' | 'joinedAt'
 type SortDir = 'asc' | 'desc'
 type RoleFilter = 'all' | 'admin' | 'customer'
-type StatusFilter = 'all' | 'active' | 'inactive'
 
 // Status configuration
 const statusConfig = {

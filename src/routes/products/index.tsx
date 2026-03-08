@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
+import { useState } from 'react'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Search, SlidersHorizontal } from 'lucide-react'

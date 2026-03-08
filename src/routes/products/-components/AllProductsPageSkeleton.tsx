@@ -1,6 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { SkeletonCard } from '@/components/SkeletonCard'
-import { Separator } from '@/components/ui/separator'
 
 export default function AllProductsPageSkeleton() {
   return (
