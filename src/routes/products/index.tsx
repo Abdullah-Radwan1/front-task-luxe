@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
@@ -6,9 +6,7 @@ import { Search, SlidersHorizontal } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { TablePagination } from '@/components/TablePagination'
-
 import { ProductCard } from '@/components/ProductCard'
-
 import { useProducts } from '#/hooks/api-hooks/products/useProducts'
 import {
   Select,
@@ -30,16 +28,14 @@ const PAGE_SIZE = 6
 export const Route = createFileRoute('/products/')({
   component: ProductsPage,
   validateSearch: productsParamsSchema,
-  loader: async () => {
-    return <AllProductsPageSkeleton />
-  },
 })
 
 export default function ProductsPage() {
-  const navigate = useNavigate()
+  const navigate = Route.useNavigate()
   const search = useSearch({ from: '/products/' }) as ProductsParams
   const { t } = useTranslation()
 
+  // Internal state for the input field
   const [searchInput, setSearchInput] = useState(search.search ?? '')
 
   const currentPage = search.page ?? 1
@@ -57,23 +53,17 @@ export default function ProductsPage() {
 
   const totalPages = data?.totalPages ?? 1
   const products = data?.products ?? []
-
   const showLoading = isLoading || isFetching
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     navigate({
-      search: ((prev: ProductsParams) => ({
+      search: (prev: ProductsParams) => ({
         ...prev,
-        search: searchInput || undefined,
+        search: searchInput.trim() || undefined,
         page: undefined,
-      })) as any,
+      }),
     })
-  }
-
-  // Show full page skeleton when loading
-  if (showLoading) {
-    return <AllProductsPageSkeleton />
   }
 
   return (
@@ -90,16 +80,21 @@ export default function ProductsPage() {
         <p className="text-muted-foreground">{t('products.browseAll')}</p>
       </motion.div>
 
-      {/* Search + sort + mobile filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <form onSubmit={handleSearch} className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('products.search')}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="pl-9"
-          />
+      {/* Search + Sort + Mobile Filters */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6  ">
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-1 sm:max-w-md w-full gap-2"
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t('products.search')}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-9 focus-visible:ring-accent"
+            />
+          </div>
         </form>
 
         {/* Sorting */}
@@ -107,11 +102,11 @@ export default function ProductsPage() {
           value={search.sort ?? 'newest'}
           onValueChange={(v) =>
             navigate({
-              search: ((prev: ProductsParams) => ({
+              search: (prev: any) => ({
                 ...prev,
                 sort: v,
                 page: undefined,
-              })) as any,
+              }),
             })
           }
         >
@@ -126,7 +121,9 @@ export default function ProductsPage() {
             </SelectItem>
           </SelectContent>
         </Select>
-
+        <Button type="submit" className="bg-accent hover:bg-accent/90 shrink-0">
+          <Search className="h-4 w-4" />
+        </Button>
         {/* Mobile Filters Sheet */}
         <Sheet>
           <SheetTrigger asChild>
@@ -134,14 +131,14 @@ export default function ProductsPage() {
               <SlidersHorizontal className="h-4 w-4" /> {t('products.filters')}
             </Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent side={t('dir') === 'rtl' ? 'right' : 'left'}>
             <FiltersSidebar className="mt-4" />
           </SheetContent>
         </Sheet>
       </div>
 
       <div className="flex gap-8">
-        {/* Sidebar */}
+        {/* Sidebar Desktop */}
         <aside className="hidden sm:block w-56 shrink-0">
           <div className="sticky top-24 rounded-lg border bg-card p-4">
             <FiltersSidebar />
@@ -149,39 +146,60 @@ export default function ProductsPage() {
         </aside>
 
         {/* Products Grid */}
-        <div className="flex-1">
-          {products.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">
-                {t('products.noResults')} 🤣
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map((product, i) => (
-                  <ProductCard key={product.id} product={product} index={i} />
-                ))}
+        {showLoading ? (
+          <div className="flex-1">
+            <AllProductsPageSkeleton />
+          </div>
+        ) : (
+          <div className="flex-1">
+            {products.length === 0 ? (
+              <div className="text-center py-24 border rounded-xl bg-muted/10">
+                <p className="text-muted-foreground mb-4">
+                  {t('products.noResults')}
+                </p>
+                {search.search && (
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      setSearchInput('')
+                      navigate({
+                        search: (prev: any) => ({ ...prev, search: undefined }),
+                      })
+                    }}
+                  >
+                    Clear search
+                  </Button>
+                )}
               </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {products.map((product, i) => (
+                    <ProductCard key={product.id} product={product} index={i} />
+                  ))}
+                </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <TablePagination
-                  page={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={(p) =>
-                    navigate({
-                      search: ((prev: ProductsParams) => ({
-                        ...prev,
-                        page: p,
-                      })) as any,
-                    })
-                  }
-                />
-              )}
-            </>
-          )}
-        </div>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-10">
+                    <TablePagination
+                      page={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(p) =>
+                        navigate({
+                          search: (prev: any) => ({
+                            ...prev,
+                            page: p,
+                          }),
+                        })
+                      }
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
     </main>
   )

@@ -22,9 +22,9 @@ export const AppLayout = ({ children }: { children?: ReactNode }) => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <div className=" mx-auto aligcn-middle  ">
+        <div className=" mx-auto  flex min-h-screen  justify-between flex-col">
           <Header />
-          <main className="flex-1 mx-auto  ">{children}</main>
+          <main className=" ">{children}</main>
           <Footer />
           <CartDrawer />
         </div>

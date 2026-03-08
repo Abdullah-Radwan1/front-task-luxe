@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -19,6 +19,7 @@ import {
   List,
 } from 'lucide-react'
 import { useOrders } from '#/hooks/api-hooks/orders/useOrders'
+import { useSearchParams } from '#/hooks/useSearchParams'
 
 import {
   Table,
@@ -97,16 +98,47 @@ export const Route = createFileRoute('/admin/_admin/orders')({
 export default function AdminOrders() {
   const { t } = useTranslation()
 
+  const [params, setSearchParams] = useSearchParams()
+
+  const appliedSearch = params.get('search') ?? ''
+  const appliedStatusFilter = ((): OrderStatus => {
+    const status = params.get('status')
+    return status === 'completed' ||
+      status === 'pending' ||
+      status === 'cancelled'
+      ? status
+      : 'all'
+  })()
+
   const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<OrderStatus>('all')
+  const [pendingSearch, setPendingSearch] = useState(appliedSearch)
+  const [search, setSearch] = useState(appliedSearch)
+  const [pendingStatusFilter, setPendingStatusFilter] =
+    useState<OrderStatus>(appliedStatusFilter)
+  const [statusFilter, setStatusFilter] =
+    useState<OrderStatus>(appliedStatusFilter)
   const [sortCol, setSortCol] = useState<SortColumn>('date')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
 
+  const applyFilters = () => {
+    const newSearch = pendingSearch
+    const newStatus = pendingStatusFilter
+
+    setSearch(newSearch)
+    setStatusFilter(newStatus)
+
+    setSearchParams({
+      search: newSearch || undefined,
+      status: newStatus === 'all' ? undefined : newStatus,
+    })
+
+    setPage(1)
+    setSelectedOrders([])
+  }
+
   const { data, isLoading } = useOrders({ page, pageSize: PAGE_SIZE })
   const orders = data?.orders ?? []
-  const totalPages = data?.totalPages ?? 1
 
   /* -------------------- Search + Filter + Sort -------------------- */
 
@@ -148,7 +180,11 @@ export default function AdminOrders() {
 
   /* -------------------- Pagination -------------------- */
 
-  const paginated = data?.orders ?? []
+  const totalPages = Math.max(1, Math.ceil(processedOrders.length / PAGE_SIZE))
+  const paginated = processedOrders.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  )
 
   const toggleSort = (col: SortColumn) => {
     setPage(1)
@@ -260,7 +296,11 @@ export default function AdminOrders() {
 
       {/* Search + Filter Inputs */}
       <div className="space-y-4">
-        <motion.div
+        <motion.form
+          onSubmit={(e) => {
+            e.preventDefault()
+            applyFilters()
+          }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col sm:flex-row gap-4"
@@ -274,12 +314,10 @@ export default function AdminOrders() {
           >
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              value={search}
+              value={pendingSearch}
               placeholder={t('admin.search')}
               onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-                setSelectedOrders([])
+                setPendingSearch(e.target.value)
               }}
               className="pl-9 border-muted-foreground/20 focus-visible:ring-accent"
             />
@@ -292,11 +330,9 @@ export default function AdminOrders() {
             transition={{ type: 'spring', stiffness: 200, delay: 0.05 }}
           >
             <Select
-              value={statusFilter}
+              value={pendingStatusFilter}
               onValueChange={(value) => {
-                setStatusFilter(value as OrderStatus)
-                setPage(1)
-                setSelectedOrders([])
+                setPendingStatusFilter(value as OrderStatus)
               }}
             >
               <SelectTrigger className="w-45 border-muted-foreground/20">
@@ -328,7 +364,11 @@ export default function AdminOrders() {
               </SelectContent>
             </Select>
           </motion.div>
-        </motion.div>
+
+          <Button type="submit" size="sm" className="self-end">
+            {t('admin.apply', 'Apply')}
+          </Button>
+        </motion.form>
 
         {/* Active Filter Badges */}
         <div className="flex flex-wrap gap-2">
@@ -347,6 +387,10 @@ export default function AdminOrders() {
                 <button
                   onClick={() => {
                     setSearch('')
+                    setPendingSearch('')
+                    setStatusFilter('all')
+                    setPendingStatusFilter('all')
+                    setSearchParams({ search: undefined, status: undefined })
                     setSelectedOrders([])
                   }}
                   className="ml-1 hover:text-foreground transition-colors"
@@ -370,6 +414,10 @@ export default function AdminOrders() {
                 <button
                   onClick={() => {
                     setStatusFilter('all')
+                    setPendingStatusFilter('all')
+                    setSearch('')
+                    setPendingSearch('')
+                    setSearchParams({ search: undefined, status: undefined })
                     setSelectedOrders([])
                   }}
                   className="ml-1 hover:text-foreground transition-colors"
@@ -474,8 +522,10 @@ export default function AdminOrders() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setSearch('')
-                        setStatusFilter('all')
+                        setSearchParams({
+                          search: undefined,
+                          status: undefined,
+                        })
                         setSelectedOrders([])
                       }}
                     >

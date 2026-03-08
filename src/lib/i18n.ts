@@ -202,6 +202,7 @@ const resources = {
         jewelry: 'Jewelry',
       },
       admin: {
+        admin: 'admin',
         welcomeBack: 'welcome Back!',
         intro: 'Enter your credentials to access the admin panel',
         dashboard: 'Dashboard',
@@ -557,6 +558,7 @@ const resources = {
         priceHigh: 'السعر: من الأعلى للأقل',
       },
       admin: {
+        admin: 'مدير',
         noProductsFound: 'المنتج غير موجود',
         welcomeBack: 'مرحبا بعودتك !',
         intro: 'أدخل بياناتك  للوصول إلى لوحة التحكم الإدارية',

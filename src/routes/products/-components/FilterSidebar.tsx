@@ -57,13 +57,6 @@ export function FiltersSidebar({
 
   /* -------------------------------------------------- */
   /* Sync local state with search params                */
-  /* -------------------------------------------------- */
-  useEffect(() => {
-    setLocalRange([
-      searchParams.minPrice ?? 0,
-      searchParams.maxPrice ?? MAX_PRICE,
-    ])
-  }, [searchParams.minPrice, searchParams.maxPrice])
 
   /* -------------------------------------------------- */
   /* URL update helper                                   */
